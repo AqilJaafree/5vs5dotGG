@@ -20,16 +20,23 @@ import {
   createGenericFile,
   generateSigner,
   percentAmount,
-  publicKey,
+  publicKey as umiPublicKey,
   signerIdentity,
   sol,
-  keypairIdentity,
   createSignerFromKeypair
 } from '@metaplex-foundation/umi';
 import { irysUploader } from '@metaplex-foundation/umi-uploader-irys';
 import { base58 } from '@metaplex-foundation/umi/serializers';
 import fs from 'fs';
 import path from 'path';
+
+// Helper function to convert Solana Keypair to Umi Signer
+function solanaKeypairToUmiSigner(umi: any, keypair: Keypair) {
+  return createSignerFromKeypair(umi, {
+    publicKey: umiPublicKey(keypair.publicKey.toString()),
+    secretKey: keypair.secretKey,
+  });
+}
 
 describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
   const provider = anchor.AnchorProvider.env();
@@ -90,9 +97,9 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
     player1 = Keypair.generate();
     player2 = Keypair.generate();
     
-    // Convert keypairs to Umi signers
-    const creator1Signer = createSignerFromKeypair(umi, creator1);
-    const player1Signer = createSignerFromKeypair(umi, player1);
+    // Convert keypairs to Umi signers using the helper function
+    const creator1Signer = solanaKeypairToUmiSigner(umi, creator1);
+    const player1Signer = solanaKeypairToUmiSigner(umi, player1);
     
     // Airdrop SOL
     await Promise.all([
@@ -117,13 +124,19 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
   });
 
   it("Create NFT Collection", async () => {
-    // Use Admin (provider wallet) to create collection
-    const adminUmi = umi.use(keypairIdentity(Keypair.fromSecretKey(
-      Buffer.from(JSON.parse(fs.readFileSync(
-        process.env.ANCHOR_WALLET || path.join(process.env.HOME, '.config/solana/id.json'), 
-        'utf-8'
-      )))
-    )));
+    // Get wallet keypair from file for admin operations
+    const walletKeypairData = JSON.parse(fs.readFileSync(
+      process.env.ANCHOR_WALLET || path.join(process.env.HOME, '.config/solana/id.json'), 
+      'utf-8'
+    ));
+    
+    const walletKeypair = Keypair.fromSecretKey(Buffer.from(walletKeypairData));
+    
+    // Convert admin keypair to Umi format
+    const adminUmiSigner = solanaKeypairToUmiSigner(umi, walletKeypair);
+    
+    // Use Admin for the Umi instance
+    const adminUmi = umi.use(signerIdentity(adminUmiSigner));
     
     // Create collection NFT signer
     const collectionNftSigner = generateSigner(adminUmi);
@@ -154,7 +167,8 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
 
   it("Creator creates NFT players", async () => {
     // Setup Umi with creator identity
-    const creatorUmi = umi.use(keypairIdentity(creator1));
+    const creator1Signer = solanaKeypairToUmiSigner(umi, creator1);
+    const creatorUmi = umi.use(signerIdentity(creator1Signer));
     
     // Create NFT signer
     creatorPlayer1Signer = generateSigner(creatorUmi);
@@ -185,7 +199,8 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
       uri: playerMetadataUri,
       sellerFeeBasisPoints: percentAmount(10),
       collection: collectionNftMint,
-      tokenStandard: TokenStandard.ProgrammableNonFungible,
+      // Remove tokenStandard property as it's causing errors
+      // The createProgrammableNft already sets this internally
     }).sendAndConfirm(creatorUmi);
     
     creatorPlayer1Mint = creatorPlayer1Signer.publicKey;
@@ -254,15 +269,16 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
 
   it("Transfer NFT to player", async () => {
     // Setup creator and player Umi instances
-    const creatorUmi = umi.use(keypairIdentity(creator1));
+    const creator1Signer = solanaKeypairToUmiSigner(umi, creator1);
+    const creatorUmi = umi.use(signerIdentity(creator1Signer));
     
     // Transfer NFT to player
     // Note: In a real implementation, this would typically happen via marketplace
     // This is simplifying the transfer for testing purposes
     const transferInstructions = await creatorUmi.programs.getTransferPnft({
       mint: creatorPlayer1Mint,
-      authority: creator1.publicKey,
-      destination: player1.publicKey,
+      authority: creator1Signer.publicKey,
+      destination: umiPublicKey(player1.publicKey.toString()),
       amount: 1,
     });
     
