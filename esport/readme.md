@@ -1,5 +1,6 @@
 # 5vs5dotGG contract
 
+```
 esport/
 ├── programs/                           # Main program/contract folder
 │   └── esport/                         # Main program (already exists)
@@ -27,6 +28,8 @@ esport/
 ├── Anchor.toml                         # Project configuration
 ├── package.json                        # NPM dependencies
 └── readme.md                           # Project documentation
+
+```
 
 ## Component Design (State Storage)
 Each component will store specific state information:
