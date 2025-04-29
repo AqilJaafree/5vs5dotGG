@@ -30,7 +30,6 @@ esport/
 └── readme.md                           # Project documentation
 
 ```
-
 ## Component Design (State Storage)
 Each component will store specific state information:
 

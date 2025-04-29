@@ -8,6 +8,13 @@ skip-lint = false
 esport = "3h171djVn6LDR1JGHfMvg3HtZM96Vmjg95MJ4Zs5AFYg"
 movement = "Fzx3eWPzsR5VCQsYjn5LsFeyLSRz7WsTJkByqbgVR6Mf"
 position = "EXBnodEG8GnhJwipqupBMMk8Cd3CRdXEgrXCh7Jd9KNv"
+player_stats = "P1ay3rSTaTs5CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4"
+team_data = "T3amDaTa15CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4t"
+team_stake = "T3amstAk35CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4s"
+creator_revenue = "Cr3aT0rR3vENU35CQYnj5LsFeyLSRz7WsTJkByqbgVR"
+team_system = "T3amSyst3m5CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4t"
+match_system = "MaTcHSyst5CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4m"
+revenue_system = "R3v3Nu3Sys5CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4r"
 
 [registry]
 url = "https://api.apr.dev"

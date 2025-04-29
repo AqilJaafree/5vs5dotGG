@@ -1,0 +1,23 @@
+[package]
+name = "team_stake"
+version = "0.2.2"
+description = "Team Stake Component for 5VS5dotGG"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "team_stake"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["bolt-lang/idl-build"]
+anchor-debug = ["bolt-lang/anchor-debug"]
+custom-heap = []
+custom-panic = []
+
+[dependencies]
+bolt-lang.workspace = true
