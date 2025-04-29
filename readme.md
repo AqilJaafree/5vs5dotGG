@@ -1,4 +1,4 @@
-esport - contract
+# 5vs5dotGG - ideal flow
 
 ```mermaid
 graph TD
