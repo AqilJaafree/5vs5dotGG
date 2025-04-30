@@ -5,7 +5,7 @@ use solana_program::pubkey::Pubkey;
 declare_id!("11111111111111111111111111111111");
 
 // Player in the team roster
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, InitSpace)]
 pub struct Player {
     pub nft_mint: Pubkey,
     #[max_len(20)]
@@ -14,7 +14,7 @@ pub struct Player {
 }
 
 // Strategy definition
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, InitSpace)]
 pub struct Strategy {
     #[max_len(20)]
     pub strategy_type: String,
@@ -23,7 +23,7 @@ pub struct Strategy {
 }
 
 // Match history entry
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, InitSpace)]
 pub struct MatchResult {
     #[max_len(50)]
     pub match_id: String,
@@ -49,7 +49,7 @@ pub struct TeamData {
     pub rating: u16,
 }
 
-#[component_methods]
+// Use regular impl without component_methods
 impl TeamData {
     pub fn initialize(
         &mut self,

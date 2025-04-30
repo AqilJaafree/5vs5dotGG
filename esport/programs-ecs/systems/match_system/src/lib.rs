@@ -3,7 +3,6 @@ use solana_program::pubkey::Pubkey;
 use team_data::TeamData;
 use player_stats::PlayerStats;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 // You'll need to replace this with an actual program ID when deploying
 declare_id!("11111111111111111111111111111111");
@@ -22,7 +21,7 @@ struct SimulateMatchArgs {
 }
 
 // Pending match struct for storage
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, InitSpace)]
 pub struct PendingMatch {
     pub team1: Pubkey,
     pub team2: Pubkey,
@@ -32,6 +31,7 @@ pub struct PendingMatch {
 }
 
 #[component]
+// Don't add InitSpace here - the component macro will add it automatically
 #[derive(Default)]
 pub struct MatchQueue {
     #[max_len(20)]
@@ -40,7 +40,8 @@ pub struct MatchQueue {
 
 #[system]
 pub mod match_system {
-
+    use super::*;
+    
     pub fn execute(ctx: Context<Components>, args_bytes: Vec<u8>) -> Result<Components> {
         // Parse the JSON arguments
         let args_str = std::str::from_utf8(&args_bytes).map_err(|_| SystemError::InvalidArgs)?;
@@ -57,11 +58,15 @@ pub mod match_system {
     }
 
     fn schedule_match(ctx: Context<Components>, args: ScheduleMatchArgs) -> Result<Components> {
-        let team1_data = &ctx.accounts.team1_data.as_ref().unwrap();
-        let team2_data = &ctx.accounts.team2_data.as_ref().unwrap();
+        let team1_data = match &ctx.accounts.team1_data {
+            Some(data) => data,
+            None => return Err(SystemError::InvalidArgs.into()),
+        };
         
-        // In a real implementation, you would add this to a match queue component
-        // For this example, we're just simulating the match scheduling
+        let team2_data = match &ctx.accounts.team2_data {
+            Some(data) => data,
+            None => return Err(SystemError::InvalidArgs.into()),
+        };
         
         // Validate teams have enough players
         require!(team1_data.roster.len() > 0, SystemError::InsufficientRoster);
@@ -77,18 +82,13 @@ pub mod match_system {
     }
     
     fn simulate_match(ctx: Context<Components>, args: SimulateMatchArgs) -> Result<Components> {
-        let team_data = &mut ctx.accounts.team1_data.as_mut().unwrap();
-        let player_stats_accounts = ctx.accounts.player_stats.as_ref();
+        let team_data = match &mut ctx.accounts.team1_data {
+            Some(data) => data,
+            None => return Err(SystemError::InvalidArgs.into()),
+        };
         
-        // Simulate the match result
-        // In a real implementation, this would use a more complex algorithm
+        // For a real implementation, this would use a more complex algorithm
         // and would involve both teams
-        
-        // For this example, we'll just use a simple algorithm based on player stats
-        let mut team_power = 0;
-        
-        // We're missing the opponent for a proper simulation
-        // In a real implementation, you'd compare both teams
         
         // For now, generate a random result
         let clock = Clock::get()?;
@@ -107,23 +107,6 @@ pub mod match_system {
             team_score,
             opponent_score,
         )?;
-        
-        // Update player stats if available
-        if let Some(player_stats_vec) = player_stats_accounts {
-            for player_stats in player_stats_vec {
-                if player_stats.is_some() {
-                    let mut player = player_stats.as_ref().unwrap();
-                    
-                    // Record match result for player
-                    // In a real implementation, this would need to be mutable
-                    // Since we can't modify it here, just logging
-                    msg!("Player {} participated in match", player.nft_mint);
-                    
-                    // Update form based on match performance (would be mutable in real impl)
-                    // player.form = (player.form + random_seed / 20).min(100);
-                }
-            }
-        }
         
         // Log match simulation result
         msg!("Match simulated: {} {}", team_data.name, if win { "won" } else { "lost" });

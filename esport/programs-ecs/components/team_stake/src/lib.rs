@@ -15,7 +15,7 @@ pub struct TeamStake {
     pub locked: bool,
 }
 
-#[component_methods]
+// Replace component_methods with regular impl
 impl TeamStake {
     pub fn initialize(
         &mut self,

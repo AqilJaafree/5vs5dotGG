@@ -5,7 +5,7 @@ use solana_program::pubkey::Pubkey;
 declare_id!("11111111111111111111111111111111");
 
 // Revenue tracking for a specific match
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, InitSpace)]
 pub struct RevenueEntry {
     #[max_len(50)]
     pub match_id: String,
@@ -25,7 +25,7 @@ pub struct CreatorRevenue {
     pub revenue_history: Vec<RevenueEntry>,
 }
 
-#[component_methods]
+// Regular impl without component_methods
 impl CreatorRevenue {
     pub fn initialize(
         &mut self,
