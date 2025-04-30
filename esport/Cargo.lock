@@ -838,6 +838,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "creator_revenue"
+version = "0.2.2"
+dependencies = [
+ "bolt-lang",
+]
+
+[[package]]
 name = "crossbeam-deque"
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1363,6 +1370,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
+name = "match_system"
+version = "0.2.2"
+dependencies = [
+ "bolt-lang",
+ "player_stats",
+ "position",
+ "serde",
+ "team_data",
+]
+
+[[package]]
 name = "memchr"
 version = "2.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1482,6 +1500,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "216eaa586a190f0a738f2f918511eecfa90f13295abec0e457cdebcceda80cbd"
 dependencies = [
  "crypto-mac",
+]
+
+[[package]]
+name = "player_stats"
+version = "0.2.2"
+dependencies = [
+ "bolt-lang",
 ]
 
 [[package]]
@@ -1679,6 +1704,16 @@ name = "regex-syntax"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
+
+[[package]]
+name = "revenue_system"
+version = "0.2.2"
+dependencies = [
+ "bolt-lang",
+ "creator_revenue",
+ "position",
+ "serde",
+]
 
 [[package]]
 name = "rustc-hash"
@@ -2031,6 +2066,32 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "team_data"
+version = "0.2.2"
+dependencies = [
+ "bolt-lang",
+]
+
+[[package]]
+name = "team_stake"
+version = "0.2.2"
+dependencies = [
+ "bolt-lang",
+]
+
+[[package]]
+name = "team_system"
+version = "0.2.2"
+dependencies = [
+ "bolt-lang",
+ "player_stats",
+ "position",
+ "serde",
+ "team_data",
+ "team_stake",
 ]
 
 [[package]]

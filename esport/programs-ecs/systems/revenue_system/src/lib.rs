@@ -4,7 +4,7 @@ use creator_revenue::CreatorRevenue;
 use serde::{Deserialize, Serialize};
 
 // You'll need to replace this with an actual program ID when deploying
-declare_id!("R3v3Nu3Sys5CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4r");
+declare_id!("11111111111111111111111111111111");
 
 // Serializable arguments for revenue system
 #[derive(Serialize, Deserialize)]

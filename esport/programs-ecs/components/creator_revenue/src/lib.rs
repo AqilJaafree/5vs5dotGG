@@ -2,7 +2,7 @@ use bolt_lang::*;
 use solana_program::pubkey::Pubkey;
 
 // You'll need to replace this with an actual program ID when deploying
-declare_id!("Cr3aT0rR3vENU35CQYnj5LsFeyLSRz7WsTJkByqbgVR");
+declare_id!("11111111111111111111111111111111");
 
 // Revenue tracking for a specific match
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]

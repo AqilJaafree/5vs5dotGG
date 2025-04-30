@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 // You'll need to replace this with an actual program ID when deploying
-declare_id!("MaTcHSyst5CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4m");
+declare_id!("11111111111111111111111111111111");
 
 // Serializable arguments for match system
 #[derive(Serialize, Deserialize)]

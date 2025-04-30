@@ -6,7 +6,7 @@ use player_stats::PlayerStats;
 use serde::{Deserialize, Serialize};
 
 // You'll need to replace this with an actual program ID when deploying
-declare_id!("T3amSyst3m5CQYnj5LsFeyLSRz7WsTJkByqbgVR6M4t");
+declare_id!("11111111111111111111111111111111");
 
 // Define serializable arguments for the system
 #[derive(Serialize, Deserialize)]
