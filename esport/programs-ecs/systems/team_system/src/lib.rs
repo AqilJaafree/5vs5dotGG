@@ -1,170 +1,147 @@
 use bolt_lang::*;
 use solana_program::pubkey::Pubkey;
 use team_data::TeamData;
-use team_stake::TeamStake;
 use player_stats::PlayerStats;
 use serde::{Deserialize, Serialize};
 
 // You'll need to replace this with an actual program ID when deploying
 declare_id!("11111111111111111111111111111111");
 
-// Define serializable arguments for the system
+// Serializable arguments for match system
 #[derive(Serialize, Deserialize)]
-struct CreateTeamArgs {
-    action: String, // Should be "createTeamWithStake"
-    team_name: String,
-    stake_amount: u64,
+struct ScheduleMatchArgs {
+    action: String, // Should be "scheduleMatch"
+    match_type: String, // "friendly", "ranked", etc.
 }
 
 #[derive(Serialize, Deserialize)]
-struct AddPlayerArgs {
-    action: String, // Should be "addPlayerToTeam"
-    player_nft_mint: Pubkey,
-    position: String,
+struct SimulateMatchArgs {
+    action: String, // Should be "simulateMatch"
+    match_id: String,
 }
 
-#[derive(Serialize, Deserialize)]
-struct RemovePlayerArgs {
-    action: String, // Should be "removePlayerFromTeam"
-    player_nft_mint: Pubkey,
+// Pending match struct for storage
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, InitSpace)]
+pub struct PendingMatch {
+    pub team1: Pubkey,
+    pub team2: Pubkey,
+    #[max_len(20)]
+    pub match_type: String,
+    pub timestamp: i64,
 }
 
-#[derive(Serialize, Deserialize)]
-struct SetStrategyArgs {
-    action: String, // Should be "setStrategy"
-    strategy: Strategy,
-}
-
-#[derive(Serialize, Deserialize)]
-struct Strategy {
-    #[serde(rename = "type")]
-    strategy_type: String,
-    description: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct UnstakeArgs {
-    action: String, // Should be "unstakeFromTeam"
+#[component]
+#[derive(Default)]
+pub struct MatchQueue {
+    #[max_len(20)]
+    pub pending_matches: Vec<PendingMatch>,
 }
 
 #[system]
-pub mod team_system {
-
+pub mod match_system {
+    use super::*;
+    
     pub fn execute(ctx: Context<Components>, args_bytes: Vec<u8>) -> Result<Components> {
         // Parse the JSON arguments
         let args_str = std::str::from_utf8(&args_bytes).map_err(|_| SystemError::InvalidArgs)?;
         
-        // Check the action type and call the appropriate handler
-        if args_str.contains("\"action\":\"createTeamWithStake\"") {
-            let args: CreateTeamArgs = serde_json::from_str(args_str).map_err(|_| SystemError::InvalidArgs)?;
-            return create_team_with_stake(ctx, args);
-        } else if args_str.contains("\"action\":\"addPlayerToTeam\"") {
-            let args: AddPlayerArgs = serde_json::from_str(args_str).map_err(|_| SystemError::InvalidArgs)?;
-            return add_player_to_team(ctx, args);
-        } else if args_str.contains("\"action\":\"removePlayerFromTeam\"") {
-            let args: RemovePlayerArgs = serde_json::from_str(args_str).map_err(|_| SystemError::InvalidArgs)?;
-            return remove_player_from_team(ctx, args);
-        } else if args_str.contains("\"action\":\"setStrategy\"") {
-            let args: SetStrategyArgs = serde_json::from_str(args_str).map_err(|_| SystemError::InvalidArgs)?;
-            return set_strategy(ctx, args);
-        } else if args_str.contains("\"action\":\"unstakeFromTeam\"") {
-            let args: UnstakeArgs = serde_json::from_str(args_str).map_err(|_| SystemError::InvalidArgs)?;
-            return unstake_from_team(ctx, args);
+        if args_str.contains("\"action\":\"scheduleMatch\"") {
+            let args: ScheduleMatchArgs = serde_json::from_str(args_str).map_err(|_| SystemError::InvalidArgs)?;
+            return schedule_match(ctx, args);
+        } else if args_str.contains("\"action\":\"simulateMatch\"") {
+            let args: SimulateMatchArgs = serde_json::from_str(args_str).map_err(|_| SystemError::InvalidArgs)?;
+            return simulate_match(ctx, args);
         } else {
             return Err(SystemError::UnknownAction.into());
         }
     }
 
-    fn create_team_with_stake(ctx: Context<Components>, args: CreateTeamArgs) -> Result<Components> {
-        let team_data = &mut ctx.accounts.team_data;
-        let team_stake = &mut ctx.accounts.team_stake;
+    fn schedule_match(ctx: Context<Components>, args: ScheduleMatchArgs) -> Result<Components> {
+        let team1_data = match &ctx.accounts.team1_data {
+            Some(data) => data,
+            None => return Err(SystemError::InvalidArgs.into()),
+        };
         
-        // Initialize team data
-        team_data.initialize(args.team_name, ctx.system_context.authority)?;
+        let team2_data = match &ctx.accounts.team2_data {
+            Some(data) => data,
+            None => return Err(SystemError::InvalidArgs.into()),
+        };
         
-        // Initialize team stake
-        team_stake.initialize(ctx.system_context.entity_ids[0], ctx.system_context.authority)?;
+        // Validate teams have enough players
+        require!(team1_data.roster.len() > 0, SystemError::InsufficientRoster);
+        require!(team2_data.roster.len() > 0, SystemError::InsufficientRoster);
         
-        // Process staking (in a real implementation, this would involve a SOL transfer)
-        team_stake.stake(args.stake_amount)?;
+        // Validate team has selected a strategy
+        require!(!team1_data.strategy.strategy_type.is_empty(), SystemError::NoStrategy);
         
-        Ok(ctx.accounts)
-    }
-    
-    fn add_player_to_team(ctx: Context<Components>, args: AddPlayerArgs) -> Result<Components> {
-        let team_data = &mut ctx.accounts.team_data;
-        let player_stats = &ctx.accounts.player_stats;
-        
-        // Verify ownership of NFT - this is just a placeholder
-        // In a real implementation, you would check if the authority owns the NFT
-        require!(
-            player_stats.nft_mint == args.player_nft_mint,
-            SystemError::InvalidNftOwnership
-        );
-        
-        // Add player to team roster
-        team_data.add_player(args.player_nft_mint, args.position)?;
+        // Log match scheduling (in production, would be added to a queue)
+        msg!("Match scheduled: {} vs {}", team1_data.name, team2_data.name);
         
         Ok(ctx.accounts)
     }
     
-    fn remove_player_from_team(ctx: Context<Components>, args: RemovePlayerArgs) -> Result<Components> {
-        let team_data = &mut ctx.accounts.team_data;
+    fn simulate_match(ctx: Context<Components>, args: SimulateMatchArgs) -> Result<Components> {
+        let team_data = match &mut ctx.accounts.team1_data {
+            Some(data) => data,
+            None => return Err(SystemError::InvalidArgs.into()),
+        };
         
-        // Verify team ownership
-        require!(
-            team_data.owner == ctx.system_context.authority,
-            SystemError::NotTeamOwner
-        );
+        // Update player stats if provided
+        if let Some(player_stats_vec) = &mut ctx.accounts.player_stats {
+            for player_stats_option in player_stats_vec.iter_mut() {
+                if let Some(player_stats) = player_stats_option {
+                    // Clock used for randomization
+                    let clock = Clock::get()?;
+                    let random_seed = (clock.unix_timestamp % 100) as u8;
+                    let win = random_seed > 50;
+                    
+                    // Update player stats based on match result
+                    player_stats.record_match_result(win)?;
+                    
+                    // Potentially update form based on performance
+                    let new_form = if win {
+                        // Slight form improvement on win
+                        (player_stats.form as u16).saturating_add(5).min(100) as u8
+                    } else {
+                        // Slight form decrease on loss
+                        (player_stats.form as u16).saturating_sub(3).max(0) as u8
+                    };
+                    
+                    player_stats.update_form(new_form)?;
+                }
+            }
+        }
         
-        // Remove player from team roster
-        team_data.remove_player(args.player_nft_mint)?;
+        // Generate a match result based on team stats, player attributes, etc.
+        // For now, we use simple randomization
+        let clock = Clock::get()?;
+        let random_seed = (clock.unix_timestamp % 100) as u8;
+        let win = random_seed > 50;
         
-        Ok(ctx.accounts)
-    }
-    
-    fn set_strategy(ctx: Context<Components>, args: SetStrategyArgs) -> Result<Components> {
-        let team_data = &mut ctx.accounts.team_data;
+        // Record match result for team
+        let opponent = Pubkey::default(); // In a real impl, this would be the opponent's entity
+        let team_score = if win { 3 } else { 1 };
+        let opponent_score = if win { 1 } else { 3 };
         
-        // Verify team ownership
-        require!(
-            team_data.owner == ctx.system_context.authority,
-            SystemError::NotTeamOwner
-        );
+        team_data.record_match_result(
+            args.match_id,
+            opponent,
+            win,
+            team_score,
+            opponent_score,
+        )?;
         
-        // Set team strategy
-        team_data.set_strategy(args.strategy.strategy_type, args.strategy.description)?;
-        
-        Ok(ctx.accounts)
-    }
-    
-    fn unstake_from_team(ctx: Context<Components>, _args: UnstakeArgs) -> Result<Components> {
-        let team_data = &ctx.accounts.team_data;
-        let team_stake = &mut ctx.accounts.team_stake;
-        
-        // Verify team ownership
-        require!(
-            team_data.owner == ctx.system_context.authority,
-            SystemError::NotTeamOwner
-        );
-        
-        // Verify staker is the authority
-        require!(
-            team_stake.staker == ctx.system_context.authority,
-            SystemError::NotStakeOwner
-        );
-        
-        // Unstake funds (in a real implementation, this would involve a SOL transfer)
-        let _amount = team_stake.unstake()?;
+        // Log match simulation result
+        msg!("Match simulated: {} {}", team_data.name, if win { "won" } else { "lost" });
         
         Ok(ctx.accounts)
     }
 
     #[system_input]
     pub struct Components {
-        pub team_data: Option<TeamData>,
-        pub team_stake: Option<TeamStake>,
-        pub player_stats: Option<PlayerStats>,
+        pub team1_data: Option<TeamData>,
+        pub team2_data: Option<TeamData>,
+        pub player_stats: Option<Vec<Option<PlayerStats>>>,
     }
 }
 
@@ -176,12 +153,9 @@ pub enum SystemError {
     #[msg("Unknown action")]
     UnknownAction,
     
-    #[msg("Not the team owner")]
-    NotTeamOwner,
+    #[msg("Team doesn't have enough players")]
+    InsufficientRoster,
     
-    #[msg("Not the stake owner")]
-    NotStakeOwner,
-    
-    #[msg("Invalid NFT ownership")]
-    InvalidNftOwnership,
+    #[msg("Team hasn't selected a strategy")]
+    NoStrategy,
 }

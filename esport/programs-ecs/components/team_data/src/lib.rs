@@ -47,6 +47,7 @@ pub struct TeamData {
     #[max_len(20)]
     pub match_history: Vec<MatchResult>,
     pub rating: u16,
+    pub active: bool, // New field to track if team is active
 }
 
 // Use regular impl without component_methods
@@ -62,6 +63,7 @@ impl TeamData {
         self.owner = owner;
         self.created_at = Clock::get()?.unix_timestamp;
         self.rating = 1000; // Starting ELO rating
+        self.active = true; // Team starts as active
         
         Ok(())
     }
@@ -142,6 +144,15 @@ impl TeamData {
         } else {
             self.rating = self.rating.saturating_sub(20);
         }
+        
+        Ok(())
+    }
+    
+    pub fn disband(&mut self) -> Result<()> {
+        // Clear the roster
+        self.roster.clear();
+        // Mark team as inactive
+        self.active = false;
         
         Ok(())
     }

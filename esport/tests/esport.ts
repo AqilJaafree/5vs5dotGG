@@ -38,15 +38,7 @@ function solanaKeypairToUmiSigner(umi: any, keypair: Keypair) {
   });
 }
 
-// Mock external staking verification
-async function mockExternalStakeVerification(wallet: PublicKey, minStakeAmount: number): Promise<boolean> {
-  // In a real implementation, this would call the external staking program
-  // For testing purposes, we'll always return true
-  console.log(`[MOCK] Verifying ${wallet.toString()} has at least ${minStakeAmount} SOL staked`);
-  return true;
-}
-
-describe("5VS5dotGG - Using External Staking Verification", () => {
+describe("5VS5dotGG - Core Gameplay", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
@@ -59,36 +51,25 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
   
   // Actor keypairs
   let creator1: Keypair;
-  let creator2: Keypair;
   let player1: Keypair;
-  let player2: Keypair;
   
   // NFT mints and signers
   let creatorPlayer1Mint;
-  let creatorPlayer2Mint;
   let creatorPlayer1Signer;
-  let creatorPlayer2Signer;
   
   // Entities
   let creatorPlayer1Entity: PublicKey;
-  let creatorPlayer2Entity: PublicKey;
   let team1Entity: PublicKey;
   
   // Component PDAs
   let player1StatsComponentPda: PublicKey;
-  let player2StatsComponentPda: PublicKey;
   let team1DataComponentPda: PublicKey;
-  let creator1RevenueComponentPda: PublicKey;
 
   // Programs
   const playerStatsComponent = anchor.workspace.PlayerStats;
   const teamDataComponent = anchor.workspace.TeamData;
-  const creatorRevenueComponent = anchor.workspace.CreatorRevenue;
   const matchSystem = anchor.workspace.MatchSystem;
   const teamSystem = anchor.workspace.TeamSystem;
-  const revenueSystem = anchor.workspace.RevenueSystem;
-  // External staking program would be used here in a real implementation
-  // const externalStakingProgram = anchor.workspace.ExternalStaking;
 
   before(async () => {
     // Setup Umi
@@ -100,9 +81,7 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
     
     // Setup keypairs
     creator1 = Keypair.generate();
-    creator2 = Keypair.generate();
     player1 = Keypair.generate();
-    player2 = Keypair.generate();
     
     // Convert keypairs to Umi signers using the helper function
     const creator1Signer = solanaKeypairToUmiSigner(umi, creator1);
@@ -172,7 +151,7 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
     console.log(`Created NFT Collection: ${collectionNftMint}`);
   });
 
-  it("Creator creates NFT players", async () => {
+  it("Creator creates NFT player", async () => {
     // Setup Umi with creator identity
     const creator1Signer = solanaKeypairToUmiSigner(umi, creator1);
     const creatorUmi = umi.use(signerIdentity(creator1Signer));
@@ -249,26 +228,6 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
       .signers([creator1])
       .rpc();
     
-    // Initialize creator revenue component
-    const initRevenue1 = await InitializeComponent({
-      payer: creator1.publicKey,
-      entity: creatorPlayer1Entity,
-      componentId: creatorRevenueComponent.programId,
-    });
-    
-    creator1RevenueComponentPda = initRevenue1.componentPda;
-    await creatorRevenueComponent.methods
-      .initialize({
-        creator: creator1.publicKey,
-        nftMint: new PublicKey(creatorPlayer1Mint.toString()),
-      })
-      .accounts({
-        component: creator1RevenueComponentPda,
-        authority: creator1.publicKey,
-      })
-      .signers([creator1])
-      .rpc();
-    
     console.log("Created NFT player entity in Bolt");
   });
 
@@ -289,20 +248,6 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
     await transferInstructions.sendAndConfirm(creatorUmi);
     
     console.log(`NFT transferred to player: ${player1.publicKey.toString()}`);
-  });
-
-  it("Verify External Staking", async () => {
-    // In a real implementation, this would verify the player's stake in an external program
-    // For now, we'll use our mock function that always returns true
-    const minStakeRequired = 1.0; // 1 SOL
-    
-    const isStaked = await mockExternalStakeVerification(
-      player1.publicKey, 
-      minStakeRequired
-    );
-    
-    expect(isStaked).to.equal(true);
-    console.log(`Verified player has staked minimum ${minStakeRequired} SOL in external program`);
   });
 
   it("Player creates team", async () => {
@@ -338,7 +283,6 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
       args: JSON.stringify({
         action: "createTeam",
         teamName: "Dragon Slayers",
-        // No stake amount parameter anymore
       })
     });
     
@@ -460,7 +404,7 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
     console.log("Strategy selected and match scheduled");
   });
 
-  it("Simulate match and distribute revenue", async () => {
+  it("Simulate match", async () => {
     // Simulate the previously scheduled match
     const matchId = "match-" + Date.now().toString();
     
@@ -482,42 +426,20 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
     
     await provider.sendAndConfirm(simulateMatch.transaction);
     
-    // Distribute revenue - 60% to creators, 40% to developers
-    const matchFee = 0.1 * anchor.web3.LAMPORTS_PER_SOL; // 0.1 SOL
-    
-    const distributeRevenue = await ApplySystem({
-      authority: provider.wallet.publicKey,
-      systemId: revenueSystem.programId,
-      world: worldPda,
-      entities: [
-        {
-          entity: creatorPlayer1Entity,
-          components: [{ componentId: creatorRevenueComponent.programId }],
-        }
-      ],
-      args: JSON.stringify({
-        action: "distributeMatchRevenue",
-        matchId: matchId,
-        totalFees: matchFee,
-      })
-    });
-    
-    await provider.sendAndConfirm(distributeRevenue.transaction);
-    
-    // Check creator revenue
-    const creatorRevenue = await creatorRevenueComponent.account.creatorRevenue.fetch(
-      creator1RevenueComponentPda
+    // Verify match was recorded
+    const teamData = await teamDataComponent.account.teamData.fetch(
+      team1DataComponentPda
     );
     
-    // Creator should get 60% of match fee
-    expect(creatorRevenue.totalEarned.toNumber()).to.be.gt(0);
+    expect(teamData.match_history.length).to.be.gt(0);
+    const latestMatch = teamData.match_history[teamData.match_history.length - 1];
+    expect(latestMatch.match_id).to.equal(matchId);
     
-    console.log(`Match completed with ${matchFee / anchor.web3.LAMPORTS_PER_SOL} SOL fees`);
-    console.log(`Creator earned ${creatorRevenue.totalEarned.toNumber() / anchor.web3.LAMPORTS_PER_SOL} SOL`);
+    console.log(`Match simulated: ${latestMatch.win ? "Won" : "Lost"} with score ${latestMatch.team_score}-${latestMatch.opponent_score}`);
   });
 
   it("Disband team", async () => {
-    // Disband team (replacing the unstake functionality)
+    // Disband team
     const disbandTeam = await ApplySystem({
       authority: player1.publicKey,
       systemId: teamSystem.programId,
@@ -535,15 +457,13 @@ describe("5VS5dotGG - Using External Staking Verification", () => {
     
     await provider.sendAndConfirm(disbandTeam.transaction, [player1]);
     
-    // Verify team is disbanded (implementation dependent)
-    // Could check if roster is empty, team is marked inactive, etc.
+    // Verify team is disbanded
     const teamData = await teamDataComponent.account.teamData.fetch(
       team1DataComponentPda
     );
     
     expect(teamData.roster.length).to.equal(0);
-    // You might need to add an "active" flag to the team data component
-    // expect(teamData.active).to.equal(false);
+    expect(teamData.active).to.equal(false);
     
     console.log("Team disbanded");
   });
