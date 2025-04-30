@@ -22,8 +22,7 @@ pub struct PlayerStats {
     pub losses: u32,
 }
 
-// Instruction handlers for initializing and updating player stats
-#[component_methods]
+// Just use a standard impl without any special attribute
 impl PlayerStats {
     pub fn initialize_stats(
         &mut self,
