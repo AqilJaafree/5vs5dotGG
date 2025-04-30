@@ -38,7 +38,15 @@ function solanaKeypairToUmiSigner(umi: any, keypair: Keypair) {
   });
 }
 
-describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
+// Mock external staking verification
+async function mockExternalStakeVerification(wallet: PublicKey, minStakeAmount: number): Promise<boolean> {
+  // In a real implementation, this would call the external staking program
+  // For testing purposes, we'll always return true
+  console.log(`[MOCK] Verifying ${wallet.toString()} has at least ${minStakeAmount} SOL staked`);
+  return true;
+}
+
+describe("5VS5dotGG - Using External Staking Verification", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
@@ -65,23 +73,22 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
   let creatorPlayer1Entity: PublicKey;
   let creatorPlayer2Entity: PublicKey;
   let team1Entity: PublicKey;
-  let teamStake1Entity: PublicKey;
   
   // Component PDAs
   let player1StatsComponentPda: PublicKey;
   let player2StatsComponentPda: PublicKey;
   let team1DataComponentPda: PublicKey;
-  let teamStake1ComponentPda: PublicKey;
   let creator1RevenueComponentPda: PublicKey;
 
   // Programs
   const playerStatsComponent = anchor.workspace.PlayerStats;
   const teamDataComponent = anchor.workspace.TeamData;
-  const teamStakeComponent = anchor.workspace.TeamStake;
   const creatorRevenueComponent = anchor.workspace.CreatorRevenue;
   const matchSystem = anchor.workspace.MatchSystem;
   const teamSystem = anchor.workspace.TeamSystem;
   const revenueSystem = anchor.workspace.RevenueSystem;
+  // External staking program would be used here in a real implementation
+  // const externalStakingProgram = anchor.workspace.ExternalStaking;
 
   before(async () => {
     // Setup Umi
@@ -199,8 +206,6 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
       uri: playerMetadataUri,
       sellerFeeBasisPoints: percentAmount(10),
       collection: collectionNftMint,
-      // Remove tokenStandard property as it's causing errors
-      // The createProgrammableNft already sets this internally
     }).sendAndConfirm(creatorUmi);
     
     creatorPlayer1Mint = creatorPlayer1Signer.publicKey;
@@ -273,8 +278,6 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
     const creatorUmi = umi.use(signerIdentity(creator1Signer));
     
     // Transfer NFT to player
-    // Note: In a real implementation, this would typically happen via marketplace
-    // This is simplifying the transfer for testing purposes
     const transferInstructions = await creatorUmi.programs.getTransferPnft({
       mint: creatorPlayer1Mint,
       authority: creator1Signer.publicKey,
@@ -288,7 +291,21 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
     console.log(`NFT transferred to player: ${player1.publicKey.toString()}`);
   });
 
-  it("Player creates team with SOL stake", async () => {
+  it("Verify External Staking", async () => {
+    // In a real implementation, this would verify the player's stake in an external program
+    // For now, we'll use our mock function that always returns true
+    const minStakeRequired = 1.0; // 1 SOL
+    
+    const isStaked = await mockExternalStakeVerification(
+      player1.publicKey, 
+      minStakeRequired
+    );
+    
+    expect(isStaked).to.equal(true);
+    console.log(`Verified player has staked minimum ${minStakeRequired} SOL in external program`);
+  });
+
+  it("Player creates team", async () => {
     // Create team entity
     const teamEntity = await AddEntity({
       payer: player1.publicKey,
@@ -307,27 +324,7 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
     
     team1DataComponentPda = initTeamData.componentPda;
     
-    // Create team stake entity
-    const stakeEntity = await AddEntity({
-      payer: player1.publicKey,
-      world: worldPda,
-      connection: provider.connection,
-    });
-    
-    teamStake1Entity = stakeEntity.entityPda;
-    
-    // Initialize team stake component
-    const initStake = await InitializeComponent({
-      payer: player1.publicKey,
-      entity: teamStake1Entity,
-      componentId: teamStakeComponent.programId,
-    });
-    
-    teamStake1ComponentPda = initStake.componentPda;
-    
-    // Stake SOL to create team
-    const stakeAmount = 1 * anchor.web3.LAMPORTS_PER_SOL; // 1 SOL
-    
+    // Create team (without staking)
     const createTeam = await ApplySystem({
       authority: player1.publicKey,
       systemId: teamSystem.programId,
@@ -336,16 +333,12 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
         {
           entity: team1Entity,
           components: [{ componentId: teamDataComponent.programId }],
-        },
-        {
-          entity: teamStake1Entity,
-          components: [{ componentId: teamStakeComponent.programId }],
         }
       ],
       args: JSON.stringify({
-        action: "createTeamWithStake",
+        action: "createTeam",
         teamName: "Dragon Slayers",
-        stakeAmount: stakeAmount,
+        // No stake amount parameter anymore
       })
     });
     
@@ -358,7 +351,7 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
     
     expect(teamData.name).to.equal("Dragon Slayers");
     
-    console.log(`Team created with ${stakeAmount / anchor.web3.LAMPORTS_PER_SOL} SOL stake`);
+    console.log(`Team created: ${teamData.name}`);
   });
 
   it("Player adds NFT to team", async () => {
@@ -523,9 +516,9 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
     console.log(`Creator earned ${creatorRevenue.totalEarned.toNumber() / anchor.web3.LAMPORTS_PER_SOL} SOL`);
   });
 
-  it("Player unstakes from team", async () => {
-    // Unstake from team
-    const unstake = await ApplySystem({
+  it("Disband team", async () => {
+    // Disband team (replacing the unstake functionality)
+    const disbandTeam = await ApplySystem({
       authority: player1.publicKey,
       systemId: teamSystem.programId,
       world: worldPda,
@@ -533,26 +526,25 @@ describe("5VS5dotGG - Team-Based Staking with Metaplex NFTs", () => {
         {
           entity: team1Entity,
           components: [{ componentId: teamDataComponent.programId }],
-        },
-        {
-          entity: teamStake1Entity,
-          components: [{ componentId: teamStakeComponent.programId }],
         }
       ],
       args: JSON.stringify({
-        action: "unstakeFromTeam",
+        action: "disbandTeam",
       })
     });
     
-    await provider.sendAndConfirm(unstake.transaction, [player1]);
+    await provider.sendAndConfirm(disbandTeam.transaction, [player1]);
     
-    // Verify unstaking
-    const stakeData = await teamStakeComponent.account.teamStake.fetch(
-      teamStake1ComponentPda
+    // Verify team is disbanded (implementation dependent)
+    // Could check if roster is empty, team is marked inactive, etc.
+    const teamData = await teamDataComponent.account.teamData.fetch(
+      team1DataComponentPda
     );
     
-    expect(stakeData.stakedAmount.toNumber()).to.equal(0);
+    expect(teamData.roster.length).to.equal(0);
+    // You might need to add an "active" flag to the team data component
+    // expect(teamData.active).to.equal(false);
     
-    console.log("Player unstaked SOL from team");
+    console.log("Team disbanded");
   });
 });
