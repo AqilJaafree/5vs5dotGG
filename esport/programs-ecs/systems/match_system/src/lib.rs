@@ -1,13 +1,12 @@
 use bolt_lang::*;
 use anchor_lang::AnchorSerialize;
 use solana_program::pubkey::Pubkey;
-use serde::{Deserialize, Serialize};
 
 // You'll need to replace this with an actual program ID when deploying
 declare_id!("11111111111111111111111111111111");
 
-// Serializable arguments for match system
-#[derive(Serialize, Deserialize)]
+// Use the #[arguments] attribute instead of manual Serialize/Deserialize
+#[arguments]
 pub struct MatchSystemArgs {
     pub action: String,
     pub match_type: Option<String>,
@@ -29,15 +28,6 @@ pub enum SystemError {
     #[msg("Team hasn't selected a strategy")]
     NoStrategy,
     
-    #[msg("Team1 data not found")]
-    Team1DataNotFound,
-    
-    #[msg("Team2 data not found")]
-    Team2DataNotFound,
-    
-    #[msg("Player stats not found")]
-    PlayerStatsNotFound,
-    
     #[msg("Match type not provided")]
     MatchTypeNotProvided,
     
@@ -51,103 +41,149 @@ pub enum SystemError {
 #[system]
 pub mod match_system {
     use bolt_lang::*;
-    use anchor_lang::prelude::*;
+    use anchor_lang::prelude::msg;
     use solana_program::pubkey::Pubkey;
-    use serde_json;
+    
+    // Import components explicitly
+    use team_data::TeamData;
+    use player_stats::PlayerStats;
     
     use crate::{SystemError, MatchSystemArgs};
     
-    pub fn execute(ctx: Context<Components>, args_bytes: Vec<u8>) -> Result<Vec<Vec<u8>>> {
-        // Parse the JSON arguments
-        let args_str = std::str::from_utf8(&args_bytes).map_err(|_| SystemError::InvalidArgs)?;
-        let args: MatchSystemArgs = serde_json::from_str(args_str)
-            .map_err(|_| SystemError::InvalidArgs)?;
-        
+    pub fn execute(ctx: Context<Components>, args: MatchSystemArgs) -> Result<Components> {
         // Process instructions based on action
         match args.action.as_str() {
             "scheduleMatch" => {
                 let match_type = args.match_type.ok_or(SystemError::MatchTypeNotProvided)?;
-                schedule_match(&ctx, match_type)?;
+                
+                // Get team data directly
+                let team1_data = &ctx.accounts.team1_data;
+                let team2_data = &ctx.accounts.team2_data;
+                
+                // Validate teams have enough players
+                require!(team1_data.roster.len() > 0, SystemError::InsufficientRoster);
+                require!(team2_data.roster.len() > 0, SystemError::InsufficientRoster);
+                
+                // Validate team has selected a strategy
+                require!(!team1_data.strategy.strategy_type.is_empty(), SystemError::NoStrategy);
+                
+                // Log match scheduling
+                msg!("Match scheduled: {} vs {} ({})", team1_data.name, team2_data.name, match_type);
             },
             "simulateMatch" => {
                 let match_id = args.match_id.ok_or(SystemError::MatchIdNotProvided)?;
-                simulate_match(&ctx, match_id)?;
+                
+                // Get team data for modification
+                let team_data = &mut ctx.accounts.team1_data;
+                
+                // Access player stats directly - no need for Option handling now
+                let team1_players = [
+                    &ctx.accounts.team1_player1, 
+                    &ctx.accounts.team1_player2, 
+                    &ctx.accounts.team1_player3, 
+                    &ctx.accounts.team1_player4, 
+                    &ctx.accounts.team1_player5
+                ];
+                
+                let team2_players = [
+                    &ctx.accounts.team2_player1, 
+                    &ctx.accounts.team2_player2, 
+                    &ctx.accounts.team2_player3, 
+                    &ctx.accounts.team2_player4, 
+                    &ctx.accounts.team2_player5
+                ];
+                
+                // Simulation logic
+                let mut team1_strength = 0;
+                let mut team2_strength = 0;
+                
+                // Calculate team1 strength
+                for player in team1_players.iter() {
+                    // Use player attributes to calculate match contribution
+                    let player_contribution = 
+                        player.mechanical as u32 +
+                        player.game_knowledge as u32 +
+                        player.team_communication as u32 + 
+                        player.form as u32;
+                    
+                    team1_strength += player_contribution;
+                    
+                    // Log for debug purposes
+                    msg!("Team 1 player {} contributing strength: {}", player.role, player_contribution);
+                }
+                
+                // Calculate team2 strength
+                for player in team2_players.iter() {
+                    // Use player attributes to calculate match contribution
+                    let player_contribution = 
+                        player.mechanical as u32 +
+                        player.game_knowledge as u32 +
+                        player.team_communication as u32 + 
+                        player.form as u32;
+                    
+                    team2_strength += player_contribution;
+                    
+                    // Log for debug purposes
+                    msg!("Team 2 player {} contributing strength: {}", player.role, player_contribution);
+                }
+                
+                // Add randomness factor (still influenced by team strength)
+                let clock = Clock::get()?;
+                let random_factor = (clock.unix_timestamp % 100) as u32;
+                
+                // Determine match winner with weighted randomness
+                let team1_final = team1_strength + (random_factor % 50);
+                let team2_final = team2_strength + ((100 - random_factor) % 50);
+                
+                let win = team1_final > team2_final;
+                
+                // Record match result
+                team_data.record_match_result(
+                    match_id,
+                    ctx.accounts.team2_data.key(),
+                    win,
+                    if win { 3 } else { 1 },
+                    if win { 1 } else { 3 },
+                )?;
+                
+                // Update player stats based on match result
+                // Note: In a real implementation, you would need to make these mutable
+                // and update them. For now, we're just logging what would happen.
+                for player in team1_players.iter() {
+                    msg!("Player {} would record match result: {}", player.role, win);
+                    // In a real implementation with mutable access:
+                    // player.record_match_result(win)?;
+                }
+                
+                msg!("Match simulated: {} {} with score {}-{}", 
+                    team_data.name, 
+                    if win { "won" } else { "lost" },
+                    if win { 3 } else { 1 },
+                    if win { 1 } else { 3 }
+                );
             },
             _ => return Err(SystemError::UnknownAction.into())
         }
         
-        // Return serialized component data
-        ctx.accounts.try_to_vec()
+        Ok(ctx.accounts)
     }
 
-    // Schedule a match between two teams
-    fn schedule_match(ctx: &Context<Components>, match_type: String) -> Result<()> {
-        // Get team1 and team2 data 
-        let team1_data = &ctx.accounts.team1_data;
-        let team2_data = &ctx.accounts.team2_data;
-        
-        // Validate teams have enough players
-        require!(team1_data.roster.len() > 0, SystemError::InsufficientRoster);
-        require!(team2_data.roster.len() > 0, SystemError::InsufficientRoster);
-        
-        // Validate team has selected a strategy
-        require!(!team1_data.strategy.strategy_type.is_empty(), SystemError::NoStrategy);
-        
-        // Log match scheduling
-        msg!("Match scheduled: {} vs {} ({})", team1_data.name, team2_data.name, match_type);
-        
-        Ok(())
-    }
-    
-    // Simulate a match and record results
-    fn simulate_match(ctx: &Context<Components>, match_id: String) -> Result<()> {
-        // Get team data - since we're mutating this, we need to access it differently
-        let team_data = &mut ctx.accounts.team1_data;
-        
-        // Process player stats if available
-        if let Some(player_stats_vec) = ctx.accounts.player_stats.as_ref() {
-            for player_stat in player_stats_vec {
-                // Clock used for randomization  
-                let clock = Clock::get()?;
-                let random_seed = (clock.unix_timestamp % 100) as u8;
-                let win = random_seed > 50;
-                
-                // Log what would happen in a real implementation
-                msg!("Player stat would be updated based on match result");
-            }
-        }
-        
-        // Generate a match result based on randomization for demonstration
-        let clock = Clock::get()?;
-        let random_seed = (clock.unix_timestamp % 100) as u8;
-        let win = random_seed > 50;
-        
-        // Record match result for team
-        let opponent = Pubkey::default(); // In a real impl, this would be the opponent's entity
-        let team_score = if win { 3 } else { 1 };
-        let opponent_score = if win { 1 } else { 3 };
-        
-        team_data.record_match_result(
-            match_id,
-            opponent,
-            win,
-            team_score,
-            opponent_score,
-        )?;
-        
-        // Log match simulation result
-        msg!("Match simulated: {} {}", team_data.name, if win { "won" } else { "lost" });
-        
-        Ok(())
-    }
-
-    // Define the Components struct for system input
+    // Define Components struct with non-optional PlayerStats fields
     #[system_input]
     pub struct Components {
         pub team1_data: TeamData,
         pub team2_data: TeamData,
-        pub player_stats: Option<Vec<PlayerStats>>,
-        #[account(signer)]
-        pub authority: AccountInfo<'info>,
+        // Team 1 players - all required now
+        pub team1_player1: PlayerStats,
+        pub team1_player2: PlayerStats,
+        pub team1_player3: PlayerStats,
+        pub team1_player4: PlayerStats,
+        pub team1_player5: PlayerStats,
+        // Team 2 players - all required now
+        pub team2_player1: PlayerStats,
+        pub team2_player2: PlayerStats,
+        pub team2_player3: PlayerStats,
+        pub team2_player4: PlayerStats,
+        pub team2_player5: PlayerStats,
     }
 }
