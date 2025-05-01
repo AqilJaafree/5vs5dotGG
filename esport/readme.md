@@ -1,55 +1,70 @@
-# 5VS5dotGG
+# 5VS5dotGG - Program - Bolt Framework
+
+A decentralized esports management platform built on Solana, enabling NFT-based team management and match simulation for competitive esports teams.
 
 ## Overview
 
-5VS5dotGG is a decentralized esports manager platform built on Solana blockchain using the Bolt Entity Component System (ECS) framework. The platform enables NFT-based team management and match simulation for competitive esports teams.
+5VS5dotGG is an innovative blockchain-based platform that combines NFT gaming with esports management. Teams, players, matches, and strategies are all represented on-chain using the Bolt Entity Component System (ECS) framework on Solana.
 
 ## Key Features
 
-- **NFT Player Cards:** Creators mint player NFTs with esports attributes
-- **Team Formation:** Players create teams and add NFT players
-- **Match Simulation:** Automatic match simulation based on team attributes and player stats
+- **NFT Player Cards:** Players are represented as NFTs with unique attributes and statistics
+- **Team Management:** Create teams, add players, set strategies, and compete
+- **Match Simulation:** Automatic match simulation based on player stats and team strategy
+- **On-chain History:** All match results and player statistics stored permanently on-chain
+- **Revenue Sharing:** 60% of match fees go to NFT creators, 40% to platform
 
-## Architecture
+## Technical Architecture
 
-The project leverages Bolt ECS architecture with:
+The project uses the Bolt ECS (Entity Component System) framework, which separates:
 
-- **Components:** State containers for different aspects of the system
-- **Systems:** Logic handlers that operate on components
-- **Entities:** Objects that components attach to
+1. **Entities:** Unique identifiers that represent game objects
+2. **Components:** Data containers attached to entities
+3. **Systems:** Logic that operates on components
 
-### Components
+### Core Components
 
-1. **PlayerStats**
-   - NFT mint address
-   - Player role/position
-   - Attributes (mechanical, game knowledge, etc.)
-   - Match statistics
+- **PlayerStats:** Stores player attributes and performance statistics
+- **TeamData:** Manages team composition, strategy, and match history
+- **MatchQueue:** Handles pending matches between teams
+- **Position:** Basic spatial component for coordinates
 
-2. **TeamData**
-   - Team name and owner
-   - Player roster (NFT players)
-   - Team strategy
-   - Match history
+### Core Systems
 
-3. **Position**
-   - Basic position component for spatial coordinates
+- **TeamSystem:** Handles team creation, roster management, and strategy selection
+- **MatchSystem:** Schedules and simulates matches between teams
+- **Movement:** Basic entity movement functionality
 
-### Systems
+## Player Attributes
 
-1. **TeamSystem**
-   - Team creation
-   - Roster management
-   - Strategy selection
-   - Team disbanding
+Each NFT player has unique attributes that affect match performance:
 
-2. **MatchSystem**
-   - Match scheduling
-   - Match simulation
-   - Result determination
+| Attribute | Description | Range |
+|-----------|-------------|-------|
+| Mechanical | Technical skill level | 0-100 |
+| Game Knowledge | Understanding of game mechanics | 0-100 |
+| Team Communication | Ability to coordinate with teammates | 0-100 |
+| Adaptability | Ability to adjust to changing conditions | 0-100 |
+| Consistency | Reliability of performance | 0-100 |
+| Form | Current performance level (fluctuates) | 0-100 |
+| Potential | Long-term growth ceiling | 0-100 |
 
-3. **Movement**
-   - Basic movement system (template for future extensions)
+## Usage Flow
+
+1. **Creator Flow:**
+   - Mint NFT players with attributes
+   - Earn revenue when their NFTs are used in matches
+
+2. **Player Flow:**
+   - Acquire NFT players (purchase, trade)
+   - Create a team by staking SOL
+   - Add NFTs to team roster
+   - Select team strategy
+   - Challenge other teams to matches
+   - Matches are simulated on-chain
+   - View results and stats
+   - Improve team through better players/strategies
+   - Optionally disband team to reclaim stake
 
 ## Getting Started
 
@@ -121,22 +136,39 @@ anchor test
 ```
 esport/
 ├── programs/
-│   └── esport/                       # Main program
+│   └── esport/                     # Main program
 │
 ├── programs-ecs/
-│   ├── components/                    # State storage
-│   │   ├── position/                  # Basic position component
-│   │   ├── player_stats/              # Player NFT attributes
-│   │   └── team_data/                 # Team information
+│   ├── components/                 # State storage
+│   │   ├── position/               # Basic position component
+│   │   ├── player_stats/           # Player NFT attributes
+│   │   ├── team_data/              # Team information
+│   │   └── match_queue/            # Match scheduling
 │   │
-│   └── systems/                       # Game logic
-│       ├── movement/                  # Basic movement system
-│       ├── team_system/               # Team management
-│       └── match_system/              # Match scheduling & simulation
+│   └── systems/                    # Game logic
+│       ├── movement/               # Basic movement system
+│       ├── team_system/            # Team management
+│       └── match_system/           # Match scheduling & simulation
 │
-├── tests/                             # Tests
-│   └── esport.ts                      # End-to-end test
+├── tests/                          # Tests
+│   └── esport.ts                   # End-to-end test
 ```
+
+## Client Side Integration
+
+### Client applications need to:
+
+Connect Wallet: Allow users to connect their Solana wallet
+View NFTs: Display owned NFT players and their attributes
+Team Management: Provide UI for team creation and player assignment
+Match Scheduling: Interface for finding opponents and scheduling matches
+Results Visualization: Display match results and statistics
+
+### Account Requirements
+For match simulation, clients must provide all required accounts:
+
+Both team data accounts
+All 10 player accounts (5 from each team)
 
 ## Development Roadmap
 
