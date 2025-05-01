@@ -1,11 +1,7 @@
-// match_system.rs
 use bolt_lang::*;
+use anchor_lang::AnchorSerialize;
 use solana_program::pubkey::Pubkey;
-use team_data::TeamData;
-use player_stats::PlayerStats;
 use serde::{Deserialize, Serialize};
-// Import the match queue from separate file
-use match_queue::{MatchQueue, PendingMatch};
 
 // You'll need to replace this with an actual program ID when deploying
 declare_id!("11111111111111111111111111111111");
@@ -14,9 +10,7 @@ declare_id!("11111111111111111111111111111111");
 #[derive(Serialize, Deserialize)]
 pub struct MatchSystemArgs {
     pub action: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub match_type: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub match_id: Option<String>,
 }
 
@@ -56,43 +50,41 @@ pub enum SystemError {
  */
 #[system]
 pub mod match_system {
-    use super::*;
-
-    pub fn execute(ctx: Context<Components>, args_bytes: Vec<u8>) -> Result<Components> {
+    use bolt_lang::*;
+    use anchor_lang::prelude::*;
+    use solana_program::pubkey::Pubkey;
+    use serde_json;
+    
+    use crate::{SystemError, MatchSystemArgs};
+    
+    pub fn execute(ctx: Context<Components>, args_bytes: Vec<u8>) -> Result<Vec<Vec<u8>>> {
         // Parse the JSON arguments
         let args_str = std::str::from_utf8(&args_bytes).map_err(|_| SystemError::InvalidArgs)?;
         let args: MatchSystemArgs = serde_json::from_str(args_str)
             .map_err(|_| SystemError::InvalidArgs)?;
         
-        // Dispatch to appropriate handler based on action
+        // Process instructions based on action
         match args.action.as_str() {
             "scheduleMatch" => {
                 let match_type = args.match_type.ok_or(SystemError::MatchTypeNotProvided)?;
-                schedule_match(ctx, match_type)
+                schedule_match(&ctx, match_type)?;
             },
             "simulateMatch" => {
                 let match_id = args.match_id.ok_or(SystemError::MatchIdNotProvided)?;
-                simulate_match(ctx, match_id)
+                simulate_match(&ctx, match_id)?;
             },
-            _ => Err(SystemError::UnknownAction.into())
+            _ => return Err(SystemError::UnknownAction.into())
         }
+        
+        // Return serialized component data
+        ctx.accounts.try_to_vec()
     }
 
     // Schedule a match between two teams
-    fn schedule_match(ctx: Context<Components>, match_type: String) -> Result<Components> {
-        // Get team1_data from Option
-        let team1_data = if let Some(data) = &ctx.accounts.team1_data {
-            data
-        } else {
-            return Err(SystemError::Team1DataNotFound.into());
-        };
-        
-        // Get team2_data from Option
-        let team2_data = if let Some(data) = &ctx.accounts.team2_data {
-            data
-        } else {
-            return Err(SystemError::Team2DataNotFound.into());
-        };
+    fn schedule_match(ctx: &Context<Components>, match_type: String) -> Result<()> {
+        // Get team1 and team2 data 
+        let team1_data = &ctx.accounts.team1_data;
+        let team2_data = &ctx.accounts.team2_data;
         
         // Validate teams have enough players
         require!(team1_data.roster.len() > 0, SystemError::InsufficientRoster);
@@ -101,49 +93,31 @@ pub mod match_system {
         // Validate team has selected a strategy
         require!(!team1_data.strategy.strategy_type.is_empty(), SystemError::NoStrategy);
         
-        // Log match scheduling (in production, would be added to a queue)
+        // Log match scheduling
         msg!("Match scheduled: {} vs {} ({})", team1_data.name, team2_data.name, match_type);
         
-        Ok(ctx.accounts)
+        Ok(())
     }
     
     // Simulate a match and record results
-    fn simulate_match(ctx: Context<Components>, match_id: String) -> Result<Components> {
-        // Get team_data from Option and make it mutable
-        let team_data = if let Some(data) = &mut ctx.accounts.team1_data {
-            data
-        } else {
-            return Err(SystemError::Team1DataNotFound.into());
-        };
+    fn simulate_match(ctx: &Context<Components>, match_id: String) -> Result<()> {
+        // Get team data - since we're mutating this, we need to access it differently
+        let team_data = &mut ctx.accounts.team1_data;
         
-        // Update player stats if provided
-        if let Some(player_stats_vec) = &mut ctx.accounts.player_stats {
-            for player_stats_option in player_stats_vec.iter_mut() {
-                if let Some(player_stats) = player_stats_option {
-                    // Clock used for randomization
-                    let clock = Clock::get()?;
-                    let random_seed = (clock.unix_timestamp % 100) as u8;
-                    let win = random_seed > 50;
-                    
-                    // Update player stats based on match result
-                    player_stats.record_match_result(win)?;
-                    
-                    // Potentially update form based on performance
-                    let new_form = if win {
-                        // Slight form improvement on win
-                        (player_stats.form as u16).saturating_add(5).min(100) as u8
-                    } else {
-                        // Slight form decrease on loss
-                        (player_stats.form as u16).saturating_sub(3).max(0) as u8
-                    };
-                    
-                    player_stats.update_form(new_form)?;
-                }
+        // Process player stats if available
+        if let Some(player_stats_vec) = ctx.accounts.player_stats.as_ref() {
+            for player_stat in player_stats_vec {
+                // Clock used for randomization  
+                let clock = Clock::get()?;
+                let random_seed = (clock.unix_timestamp % 100) as u8;
+                let win = random_seed > 50;
+                
+                // Log what would happen in a real implementation
+                msg!("Player stat would be updated based on match result");
             }
         }
         
-        // Generate a match result based on team stats, player attributes, etc.
-        // For now, use simple randomization
+        // Generate a match result based on randomization for demonstration
         let clock = Clock::get()?;
         let random_seed = (clock.unix_timestamp % 100) as u8;
         let win = random_seed > 50;
@@ -164,17 +138,16 @@ pub mod match_system {
         // Log match simulation result
         msg!("Match simulated: {} {}", team_data.name, if win { "won" } else { "lost" });
         
-        Ok(ctx.accounts)
+        Ok(())
     }
 
-    // Input structure definition
+    // Define the Components struct for system input
     #[system_input]
     pub struct Components {
-        pub team1_data: Option<TeamData>,
-        pub team2_data: Option<TeamData>,
-        pub player_stats: Option<Vec<Option<PlayerStats>>>,
-        pub match_queue: Option<MatchQueue>,
+        pub team1_data: TeamData,
+        pub team2_data: TeamData,
+        pub player_stats: Option<Vec<PlayerStats>>,
         #[account(signer)]
-        pub authority: Signer<'info>,
+        pub authority: AccountInfo<'info>,
     }
 }
