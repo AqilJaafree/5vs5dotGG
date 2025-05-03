@@ -5,7 +5,7 @@ anchor_version = "0.30.1"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
+[programs.devnet]
 esport = "3h171djVn6LDR1JGHfMvg3HtZM96Vmjg95MJ4Zs5AFYg"
 movement = "Fzx3eWPzsR5VCQsYjn5LsFeyLSRz7WsTJkByqbgVR6Mf"
 position = "EXBnodEG8GnhJwipqupBMMk8Cd3CRdXEgrXCh7Jd9KNv"
@@ -19,8 +19,8 @@ match_queue = "CHUtz6R1YRSYVRf56i4jefH4EiLMGFTx4TuSXa9SfhAy"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+cluster = "devnet"
+wallet = "/home/wanaqil/devnet-wallet.json"
 
 [workspace]
 members = ["programs/*", "programs-ecs/components/*", "programs-ecs/systems/*"]

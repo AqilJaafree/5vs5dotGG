@@ -1,10 +1,30 @@
-# 5VS5dotGG - Program - Bolt Framework
+# 5VS5dotGG - Decentralized Esports Platform
 
 A decentralized esports management platform built on Solana, enabling NFT-based team management and match simulation for competitive esports teams.
 
 ## Overview
 
 5VS5dotGG is an innovative blockchain-based platform that combines NFT gaming with esports management. Teams, players, matches, and strategies are all represented on-chain using the Bolt Entity Component System (ECS) framework on Solana.
+
+## Deployments
+
+### Devnet Deployment
+
+The project is currently deployed on Solana Devnet with the following program IDs:
+
+| Program | Address |
+|---------|---------|
+| esport | `3h171djVn6LDR1JGHfMvg3HtZM96Vmjg95MJ4Zs5AFYg` |
+| movement | `Fzx3eWPzsR5VCQsYjn5LsFeyLSRz7WsTJkByqbgVR6Mf` |
+| position | `EXBnodEG8GnhJwipqupBMMk8Cd3CRdXEgrXCh7Jd9KNv` |
+| player_stats | `5VLAaXmJsdUeV66WQJKvwGd3cLfsM5ETnN3PXC9ny1jh` |
+| team_data | `D4xnj8Qd5vh7zZ2t5oVT78csuJUL1H5UbTxrC1bUutrN` |
+| team_system | `EyqXcKHQ6dAEcKpCzrsMsoC87XtMjatsSNSKNNHC5C8R` |
+| match_system | `ENQjWYERif38dvoXjqEJpzM2cYXgEq2VBzDeH1Rn2RAz` |
+| match_queue | `CHUtz6R1YRSYVRf56i4jefH4EiLMGFTx4TuSXa9SfhAy` |
+| Bolt World | `WorLD15A7CrDwLcLy4fRqtaTb9fbd8o8iqiEMUDse2n` |
+
+You can view these programs on [Solana Explorer (Devnet)](https://explorer.solana.com/?cluster=devnet).
 
 ## Key Features
 
@@ -93,66 +113,57 @@ Each NFT player has unique attributes that affect match performance:
    anchor build
    ```
 
-4. Generate program IDs:
+### Connecting to Devnet Deployment
+
+To interact with the deployed contracts on devnet:
+
+1. Configure Solana CLI for devnet:
    ```bash
-   solana-keygen new -o target/deploy/player_stats-keypair.json
-   solana-keygen new -o target/deploy/team_data-keypair.json
-   # Generate for all components and systems
+   solana config set --url https://api.devnet.solana.com
    ```
 
-5. Update program IDs in files and `Anchor.toml`
-
-6. Deploy:
-   ```bash
-   anchor deploy
+2. Update your Anchor.toml to include the devnet program IDs:
+   ```toml
+   [programs.devnet]
+   esport = "3h171djVn6LDR1JGHfMvg3HtZM96Vmjg95MJ4Zs5AFYg"
+   movement = "Fzx3eWPzsR5VCQsYjn5LsFeyLSRz7WsTJkByqbgVR6Mf"
+   position = "EXBnodEG8GnhJwipqupBMMk8Cd3CRdXEgrXCh7Jd9KNv"
+   player_stats = "5VLAaXmJsdUeV66WQJKvwGd3cLfsM5ETnN3PXC9ny1jh"
+   team_data = "D4xnj8Qd5vh7zZ2t5oVT78csuJUL1H5UbTxrC1bUutrN"
+   team_system = "EyqXcKHQ6dAEcKpCzrsMsoC87XtMjatsSNSKNNHC5C8R"
+   match_system = "ENQjWYERif38dvoXjqEJpzM2cYXgEq2VBzDeH1Rn2RAz"
+   match_queue = "CHUtz6R1YRSYVRf56i4jefH4EiLMGFTx4TuSXa9SfhAy"
    ```
 
-### Running Tests
+3. Initialize Game World:
+   ```javascript
+   // Example code snippet
+   const { Connection, PublicKey, Keypair } = require('@solana/web3.js');
+   const { InitializeNewWorld } = require('@magicblock-labs/bolt-sdk');
+   const anchor = require('@coral-xyz/anchor');
 
-```bash
-anchor test
-```
+   // Setup connection and wallet
+   const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
+   // Load your wallet
+   const wallet = // your wallet setup
 
-## User Flows
+   // Initialize world
+   const initNewWorld = await InitializeNewWorld({
+     payer: wallet.publicKey,
+     connection,
+   });
+   
+   const txSign = await wallet.sendAndConfirm(initNewWorld.transaction);
+   const worldPda = initNewWorld.worldPda;
+   
+   console.log(`World PDA: ${worldPda.toString()}`);
+   // Save this World PDA for future interactions
+   ```
 
-### Creator Flow
-
-1. Creator mints NFT players with attributes
-2. Players use NFTs in matches
-
-### Player Flow
-
-1. Player acquires NFT players
-2. Player creates a team
-3. Player adds NFTs to team roster
-4. Player selects team strategy
-5. Player schedules matches
-6. Match is simulated on-chain
-7. Player views results and stats
-8. Player can disband team when desired
-
-## Smart Contract Structure
-
-```
-esport/
-├── programs/
-│   └── esport/                     # Main program
-│
-├── programs-ecs/
-│   ├── components/                 # State storage
-│   │   ├── position/               # Basic position component
-│   │   ├── player_stats/           # Player NFT attributes
-│   │   ├── team_data/              # Team information
-│   │   └── match_queue/            # Match scheduling
-│   │
-│   └── systems/                    # Game logic
-│       ├── movement/               # Basic movement system
-│       ├── team_system/            # Team management
-│       └── match_system/           # Match scheduling & simulation
-│
-├── tests/                          # Tests
-│   └── esport.ts                   # End-to-end test
-```
+4. Run the test suite against devnet:
+   ```bash
+   ANCHOR_PROVIDER_URL=https://api.devnet.solana.com anchor test --skip-build --skip-deploy --skip-local-validator
+   ```
 
 ## Client Side Integration
 
