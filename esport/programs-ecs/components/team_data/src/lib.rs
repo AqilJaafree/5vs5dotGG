@@ -2,7 +2,7 @@ use bolt_lang::*;
 use solana_program::pubkey::Pubkey;
 
 // You'll need to replace this with an actual program ID when deploying
-declare_id!("11111111111111111111111111111111");
+declare_id!("D4xnj8Qd5vh7zZ2t5oVT78csuJUL1H5UbTxrC1bUutrN");
 
 // Player in the team roster
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Default, InitSpace)]

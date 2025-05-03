@@ -1,14 +1,12 @@
 use bolt_lang::*;
-use serde::Deserialize;
-use std::str::FromStr;
 use solana_program::pubkey::Pubkey;
 
 // Explicitly import the component types
-use team_data::TeamData;
-use player_stats::PlayerStats;
+// use team_data::TeamData;
+// use player_stats::PlayerStats;
 
 // You'll need to replace this with an actual program ID when deploying
-declare_id!("11111111111111111111111111111111");
+declare_id!("EyqXcKHQ6dAEcKpCzrsMsoC87XtMjatsSNSKNNHC5C8R");
 
 // Serializable arguments for team system
 #[arguments]
@@ -55,7 +53,7 @@ pub enum SystemError {
 #[system]
 pub mod team_system {
     // Import everything we need in the system module scope
-    use bolt_lang::*;
+    // use bolt_lang::*;
     use anchor_lang::prelude::msg;
     use solana_program::pubkey::Pubkey;
     use std::str::FromStr;

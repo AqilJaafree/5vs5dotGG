@@ -2,8 +2,7 @@ use bolt_lang::*;
 use anchor_lang::AnchorSerialize;
 use solana_program::pubkey::Pubkey;
 
-// You'll need to replace this with an actual program ID when deploying
-declare_id!("11111111111111111111111111111111");
+declare_id!("ENQjWYERif38dvoXjqEJpzM2cYXgEq2VBzDeH1Rn2RAz");
 
 // Use the #[arguments] attribute instead of manual Serialize/Deserialize
 #[arguments]
@@ -40,7 +39,6 @@ pub enum SystemError {
  */
 #[system]
 pub mod match_system {
-    use bolt_lang::*;
     use anchor_lang::prelude::msg;
     use solana_program::pubkey::Pubkey;
     

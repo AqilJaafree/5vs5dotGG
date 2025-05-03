@@ -2,7 +2,7 @@ use bolt_lang::*;
 use solana_program::pubkey::Pubkey;
 
 // You'll need to replace this with an actual program ID when deploying
-declare_id!("11111111111111111111111111111111");
+declare_id!("5VLAaXmJsdUeV66WQJKvwGd3cLfsM5ETnN3PXC9ny1jh");
 
 #[component]
 #[derive(Default)]

@@ -9,12 +9,11 @@ skip-lint = false
 esport = "3h171djVn6LDR1JGHfMvg3HtZM96Vmjg95MJ4Zs5AFYg"
 movement = "Fzx3eWPzsR5VCQsYjn5LsFeyLSRz7WsTJkByqbgVR6Mf"
 position = "EXBnodEG8GnhJwipqupBMMk8Cd3CRdXEgrXCh7Jd9KNv"
-player_stats = "11111111111111111111111111111111"
-team_data = "11111111111111111111111111111111"
-team_system = "11111111111111111111111111111111"
-match_system = "11111111111111111111111111111111"
-revenue_system = "11111111111111111111111111111111"
-match_queue = "11111111111111111111111111111111"
+player_stats = "5VLAaXmJsdUeV66WQJKvwGd3cLfsM5ETnN3PXC9ny1jh"
+team_data = "D4xnj8Qd5vh7zZ2t5oVT78csuJUL1H5UbTxrC1bUutrN"
+team_system = "EyqXcKHQ6dAEcKpCzrsMsoC87XtMjatsSNSKNNHC5C8R"
+match_system = "ENQjWYERif38dvoXjqEJpzM2cYXgEq2VBzDeH1Rn2RAz"
+match_queue = "CHUtz6R1YRSYVRf56i4jefH4EiLMGFTx4TuSXa9SfhAy"
 
 [registry]
 url = "https://api.apr.dev"
