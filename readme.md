@@ -1,121 +1,237 @@
-# 5vs5dotGG - ideal flow
-## Creator Flow
+# 5VS5dotGG - Decentralized Esports Platform
 
-### NFT Creation
+A decentralized esports management platform built on Solana, enabling NFT-based team management and match simulation for competitive esports teams.
 
-Creators mint programmable NFTs (pNFTs) representing esports players
-They define player attributes like position, mechanical skill, game knowledge, etc.
-NFTs belong to a collection for the 5VS5dotGG ecosystem
+## Overview
 
+5VS5dotGG is an innovative blockchain-based platform that combines NFT gaming with esports management. Teams, players, matches, and strategies are all represented on-chain using the Bolt Entity Component System (ECS) framework on Solana.
 
-### Revenue Earning
+## Deployments
 
-Creators earn 60% of match fees when their NFT players are used in games
-Revenue is tracked and distributed automatically through the CreatorRevenue component
+### Devnet Deployment
 
+The project is currently deployed on Solana Devnet with the following program IDs:
 
+| Program | Address |
+|---------|---------|
+| esport | `3h171djVn6LDR1JGHfMvg3HtZM96Vmjg95MJ4Zs5AFYg` |
+| movement | `Fzx3eWPzsR5VCQsYjn5LsFeyLSRz7WsTJkByqbgVR6Mf` |
+| position | `EXBnodEG8GnhJwipqupBMMk8Cd3CRdXEgrXCh7Jd9KNv` |
+| player_stats | `5VLAaXmJsdUeV66WQJKvwGd3cLfsM5ETnN3PXC9ny1jh` |
+| team_data | `D4xnj8Qd5vh7zZ2t5oVT78csuJUL1H5UbTxrC1bUutrN` |
+| team_system | `EyqXcKHQ6dAEcKpCzrsMsoC87XtMjatsSNSKNNHC5C8R` |
+| match_system | `ENQjWYERif38dvoXjqEJpzM2cYXgEq2VBzDeH1Rn2RAz` |
+| match_queue | `CHUtz6R1YRSYVRf56i4jefH4EiLMGFTx4TuSXa9SfhAy` |
+| Bolt World | `WorLD15A7CrDwLcLy4fRqtaTb9fbd8o8iqiEMUDse2n` |
 
-## Player Flow
+You can view these programs on [Solana Explorer (Devnet)](https://explorer.solana.com/?cluster=devnet).
 
-### NFT Acquisition
+## Key Features
 
-Players purchase/acquire NFTs representing esport players from creators
-These NFTs have specific attributes that affect gameplay
+- **NFT Player Cards:** Players are represented as NFTs with unique attributes and statistics
+- **Team Management:** Create teams, add players, set strategies, and compete
+- **Match Simulation:** Automatic match simulation based on player stats and team strategy
+- **On-chain History:** All match results and player statistics stored permanently on-chain
+- **Revenue Sharing:** 60% of match fees go to NFT creators, 40% to platform
 
+## Technical Architecture
 
-### Team Creation
+The project uses the Bolt ECS (Entity Component System) framework, which separates:
 
-Players stake SOL (minimum 1 SOL) to create a team
-This creates a TeamData component and a TeamStake component in the system
-The stake serves as both an economic commitment and anti-spam measure
+1. **Entities:** Unique identifiers that represent game objects
+2. **Components:** Data containers attached to entities
+3. **Systems:** Logic that operates on components
 
+### Core Components
 
-### Team Management
+- **PlayerStats:** Stores player attributes and performance statistics
+- **TeamData:** Manages team composition, strategy, and match history
+- **MatchQueue:** Handles pending matches between teams
+- **Position:** Basic spatial component for coordinates
 
-Players add their owned NFTs to their team roster
-Each NFT player is assigned to specific positions (e.g., "Midlaner")
-The team can have multiple players in different positions
+### Core Systems
 
+- **TeamSystem:** Handles team creation, roster management, and strategy selection
+- **MatchSystem:** Schedules and simulates matches between teams
+- **Movement:** Basic entity movement functionality
 
-### Strategy Selection
+## Player Attributes
 
-Players select a team strategy (e.g., "Aggro", "Control", "High Tempo")
-Different strategies would likely have different effectiveness based on roster composition
+Each NFT player has unique attributes that affect match performance:
 
+| Attribute | Description | Range |
+|-----------|-------------|-------|
+| Mechanical | Technical skill level | 0-100 |
+| Game Knowledge | Understanding of game mechanics | 0-100 |
+| Team Communication | Ability to coordinate with teammates | 0-100 |
+| Adaptability | Ability to adjust to changing conditions | 0-100 |
+| Consistency | Reliability of performance | 0-100 |
+| Form | Current performance level (fluctuates) | 0-100 |
+| Potential | Long-term growth ceiling | 0-100 |
 
-### Match Scheduling
+## Usage Flow
 
-Players can schedule matches against other teams
-Matches can be different types (friendly, ranked, etc.)
+1. **Creator Flow:**
+   - Mint NFT players with attributes
+   - Earn revenue when their NFTs are used in matches
 
+2. **Player Flow:**
+   - Acquire NFT players (purchase, trade)
+   - Create a team by staking SOL
+   - Add NFTs to team roster
+   - Select team strategy
+   - Challenge other teams to matches
+   - Matches are simulated on-chain
+   - View results and stats
+   - Improve team through better players/strategies
+   - Optionally disband team to reclaim stake
 
-### Match Simulation
+## Getting Started
 
-Matches are simulated on-chain based on team composition and strategy
-Results are determined algorithmically using player NFT attributes
-No actual gameplay occurs - this is a simulation-based system
+### Prerequisites
 
+- Solana CLI
+- Anchor Framework
+- Rust
+- Node.js and Yarn
 
-### Result Review
+### Installation
 
-Players can view match results and statistics
-This likely affects team rankings and player performance metrics
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/5vs5dotgg.git
+   cd 5vs5dotgg
+   ```
 
+2. Install dependencies:
+   ```bash
+   yarn install
+   ```
 
-### Team Dissolution (Optional)
+3. Build the project:
+   ```bash
+   anchor build
+   ```
 
-Players can unstake their SOL to dissolve the team
-This returns their staked SOL to their wallet
+### Connecting to Devnet Deployment
 
+To interact with the deployed contracts on devnet:
 
+1. Configure Solana CLI for devnet:
+   ```bash
+   solana config set --url https://api.devnet.solana.com
+   ```
 
-## Economic Flow
+2. Update your Anchor.toml to include the devnet program IDs:
+   ```toml
+   [programs.devnet]
+   esport = "3h171djVn6LDR1JGHfMvg3HtZM96Vmjg95MJ4Zs5AFYg"
+   movement = "Fzx3eWPzsR5VCQsYjn5LsFeyLSRz7WsTJkByqbgVR6Mf"
+   position = "EXBnodEG8GnhJwipqupBMMk8Cd3CRdXEgrXCh7Jd9KNv"
+   player_stats = "5VLAaXmJsdUeV66WQJKvwGd3cLfsM5ETnN3PXC9ny1jh"
+   team_data = "D4xnj8Qd5vh7zZ2t5oVT78csuJUL1H5UbTxrC1bUutrN"
+   team_system = "EyqXcKHQ6dAEcKpCzrsMsoC87XtMjatsSNSKNNHC5C8R"
+   match_system = "ENQjWYERif38dvoXjqEJpzM2cYXgEq2VBzDeH1Rn2RAz"
+   match_queue = "CHUtz6R1YRSYVRf56i4jefH4EiLMGFTx4TuSXa9SfhAy"
+   ```
 
-### Match Fee Collection
+3. Initialize Game World:
+   ```javascript
+   // Example code snippet
+   const { Connection, PublicKey, Keypair } = require('@solana/web3.js');
+   const { InitializeNewWorld } = require('@magicblock-labs/bolt-sdk');
+   const anchor = require('@coral-xyz/anchor');
 
-Each match generates a fee (currently 0.1 SOL per match)
-This fee is collected from the players or spectators (not clear from the code)
+   // Setup connection and wallet
+   const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
+   // Load your wallet
+   const wallet = // your wallet setup
 
+   // Initialize world
+   const initNewWorld = await InitializeNewWorld({
+     payer: wallet.publicKey,
+     connection,
+   });
+   
+   const txSign = await wallet.sendAndConfirm(initNewWorld.transaction);
+   const worldPda = initNewWorld.worldPda;
+   
+   console.log(`World PDA: ${worldPda.toString()}`);
+   // Save this World PDA for future interactions
+   ```
 
-### Revenue Distribution
+4. Run the test suite against devnet:
+   ```bash
+   ANCHOR_PROVIDER_URL=https://api.devnet.solana.com anchor test --skip-build --skip-deploy --skip-local-validator
+   ```
 
-60% of match fees go to NFT creators based on NFT usage
-40% goes to platform developers
-Distribution is handled automatically by the RevenueSystem
+## Client Side Integration
 
-```mermaid
-graph TD
-    subgraph "Creator Flow"
-        C1[Player Creators] -->|create NFT players| Collection[NFT Esport Collection]
-        Collection -->|get revenue share| C1
-    end
+### Client applications need to:
 
-    subgraph "Player Flow"
-        P1[Players] -->|connect wallet| Game[Connect to Game]
-        Game -->|view owned NFTs| Wallet[Wallet Connected NFTs]
-        Wallet --> Home[Home Page]
-        
-        Home -->|stake SOL for team| Team[Create/Join Team]
-        Team -->|add NFT players| Roster[Team Roster]
-        Roster -->|choose strategy| Strategy[Select Strategy:<br/>- Aggro<br/>- Control<br/>- High Tempo]
-        
-        Strategy --> Match[Matchmaking]
-        Match -->|find opponent| Schedule[Schedule Match]
-        Schedule -->|automatic simulation| Simulation[Match Simulation]
-        Simulation --> Results[View Results & Stats]
-        Results --> Home
-        
-        Team -->|unstake to leave| Unstake[Unstake SOL]
-        Unstake -->|get SOL back| Home
-    end
+Connect Wallet: Allow users to connect their Solana wallet
+View NFTs: Display owned NFT players and their attributes
+Team Management: Provide UI for team creation and player assignment
+Match Scheduling: Interface for finding opponents and scheduling matches
+Results Visualization: Display match results and statistics
 
-    subgraph "Economic Flow"
-        Simulation -->|match fees| Revenue[Revenue Distribution]
-        Revenue -->|60% to creators| Collection
-        Revenue -->|40% to developers| Dev[Developers]
-    end
+### Account Requirements
+For match simulation, clients must provide all required accounts:
 
-    style Collection fill:#f9f,stroke:#333,stroke-width:2px
-    style Team fill:#bbf,stroke:#333,stroke-width:2px
-    style Revenue fill:#bfb,stroke:#333,stroke-width:2px
-```
+Both team data accounts
+All 10 player accounts (5 from each team)
+
+## Development Roadmap
+
+### Phase 1: Core Features (Current)
+- NFT integration
+- Team management
+- Match simulation
+
+### Phase 2: Enhanced Features (Planned)
+- Tournaments
+- Team upgrades
+- Enhanced match algorithms
+- Economic features (staking, rewards)
+
+### Phase 3: Ecosystem Expansion (Future)
+- Marketplace integration
+- DAO governance
+- Cross-game compatibility
+- Mobile application
+
+## Technical Details
+
+### Bolt ECS Framework
+
+This project uses Bolt, a specialized framework for building Solana programs using the Entity Component System (ECS) architecture:
+
+- Entities are objects in the world (NFTs, teams, matches)
+- Components store data about these entities
+- Systems implement logic that acts on components
+
+### NFT Integration
+
+The platform uses Metaplex's Programmable NFTs (pNFTs) to:
+- Store player attributes
+- Track ownership
+- Enable trading and transfer of player cards
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- [Bolt ECS Framework](https://magicblock.gg/)
+- [Metaplex](https://www.metaplex.com/)
+- [Solana](https://solana.com/)
+- [Anchor Framework](https://www.anchor-lang.com/)
