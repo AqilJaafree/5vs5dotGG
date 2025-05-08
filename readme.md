@@ -163,7 +163,7 @@ To interact with the deployed contracts on devnet:
 4. Run the test suite against devnet:
    ```bash
    ANCHOR_PROVIDER_URL=https://api.devnet.solana.com anchor test --skip-build --skip-deploy --skip-local-validator
-   ```
+   ```w
 
 ## Client Side Integration
 
