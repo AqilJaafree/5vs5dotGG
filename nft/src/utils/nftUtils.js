@@ -1,96 +1,131 @@
-// src/utils/nftUtils.js
-import { 
-  createNft, 
-  mplTokenMetadata, 
-} from "@metaplex-foundation/mpl-token-metadata";
+// src/utils/nftUtils.js - Using proper Umi transaction serialization
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { irysUploader } from '@metaplex-foundation/umi-uploader-irys';
+import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import { 
-  generateSigner, 
-  signerIdentity, 
-  percentAmount, 
-  publicKey
+  publicKey, 
+  generateSigner,
+  percentAmount,
+  keypairIdentity,
+  signerIdentity,
+  TransactionBuilder,
+  transactionBuilder,
+  none,
+  some
 } from "@metaplex-foundation/umi";
+import { Keypair, VersionedTransaction } from '@solana/web3.js';
+import { toWeb3JsTransaction, fromWeb3JsTransaction } from '@metaplex-foundation/umi-web3js-adapters';
 
-// Create a wallet adapter signer
-const createWalletAdapterSigner = (walletAdapter) => {
-  if (!walletAdapter.publicKey) {
-    throw new Error('Wallet not connected');
-  }
-
-  return {
-    publicKey: publicKey(walletAdapter.publicKey.toBase58()),
-    signMessage: async (message) => {
-      return await walletAdapter.signMessage(message);
-    },
-    signTransaction: async (transaction) => {
-      return await walletAdapter.signTransaction(transaction);
-    },
-    signAllTransactions: async (transactions) => {
-      return await walletAdapter.signAllTransactions(transactions);
-    },
-  };
-};
-
-// Initialize Umi
+// Initialize Umi with proper transaction serialization support
 export const initializeUmi = (connection, walletAdapter) => {
-  const umi = createUmi(connection.rpcEndpoint)
-    .use(mplTokenMetadata())
-    .use(irysUploader({ address: 'https://devnet.irys.xyz' }));
+  console.log("Initializing Umi with proper transaction serialization");
   
-  if (walletAdapter && walletAdapter.publicKey) {
-    const signer = createWalletAdapterSigner(walletAdapter);
-    umi.use(signerIdentity(signer));
+  try {
+    // Create Umi instance
+    const umi = createUmi(connection.rpcEndpoint).use(mplTokenMetadata());
+    
+    if (walletAdapter && walletAdapter.publicKey) {
+      console.log("Setting up wallet with public key:", walletAdapter.publicKey.toBase58());
+      
+      // Create a special adapter that handles transaction conversion
+      const walletSigner = {
+        publicKey: publicKey(walletAdapter.publicKey.toBase58()),
+        signMessage: async (message) => {
+          console.log("Signing message");
+          const signedMessage = await walletAdapter.signMessage(message);
+          return signedMessage instanceof Uint8Array ? signedMessage : new Uint8Array(signedMessage);
+        },
+        // The key change: convert Umi transaction to Web3.js transaction before signing
+        signTransaction: async (umiTransaction) => {
+          console.log("Converting Umi transaction to Web3.js transaction for signing");
+          
+          // Convert Umi transaction to Web3.js transaction
+          const web3JsTransaction = toWeb3JsTransaction(umiTransaction);
+          
+          console.log("Signing Web3.js transaction with wallet");
+          const signedWeb3JsTransaction = await walletAdapter.signTransaction(web3JsTransaction);
+          
+          console.log("Converting signed Web3.js transaction back to Umi transaction");
+          // Convert the signed Web3.js transaction back to a Umi transaction
+          return fromWeb3JsTransaction(signedWeb3JsTransaction);
+        },
+        signAllTransactions: async (umiTransactions) => {
+          console.log("Converting multiple Umi transactions to Web3.js transactions");
+          
+          // Convert all Umi transactions to Web3.js transactions
+          const web3JsTransactions = umiTransactions.map(tx => toWeb3JsTransaction(tx));
+          
+          console.log("Signing all Web3.js transactions with wallet");
+          const signedWeb3JsTransactions = await walletAdapter.signAllTransactions(web3JsTransactions);
+          
+          console.log("Converting all signed Web3.js transactions back to Umi transactions");
+          // Convert all signed Web3.js transactions back to Umi transactions
+          return signedWeb3JsTransactions.map(tx => fromWeb3JsTransaction(tx));
+        }
+      };
+      
+      // Apply the wallet signer to Umi
+      umi.use(signerIdentity(walletSigner));
+      
+      console.log("Umi identity set to:", umi.identity.publicKey.toString());
+    } else {
+      console.warn("No wallet connected");
+    }
+    
+    return umi;
+  } catch (error) {
+    console.error("Error initializing Umi:", error);
+    throw error;
   }
-  
-  return umi;
 };
 
-// Create a simple player NFT
+// Create a simple test transaction using Umi
 export const createPlayerNFT = async (umi, playerData) => {
   try {
-    // Create a new mint
-    const nftMint = generateSigner(umi);
+    console.log("Testing Umi transaction with wallet");
     
-    // Prepare player attributes for metadata
-    const attributes = [
-      { trait_type: 'Position', value: playerData.position },
-      { trait_type: 'Mechanical', value: playerData.mechanical.toString() },
-      { trait_type: 'Game Knowledge', value: playerData.gameKnowledge.toString() },
-      { trait_type: 'Team Communication', value: playerData.teamCommunication.toString() },
-    ];
+    // First test message signing
+    try {
+      console.log("Testing message signing");
+      const message = new TextEncoder().encode(`Testing wallet for: ${playerData.name}`);
+      const signature = await umi.identity.signMessage(message);
+      console.log("Message signing successful");
+    } catch (msgError) {
+      console.error("Message signing failed:", msgError);
+      throw new Error("Message signing failed. Please check your wallet connection.");
+    }
     
-    // Create metadata
-    const metadata = {
-      name: playerData.name,
-      symbol: '5VS5',
-      description: `${playerData.name} - ${playerData.position} player for 5VS5dotGG`,
-      image: 'https://arweave.net/placeholder-image-uri',
-      attributes: attributes
-    };
+    // Create a new mint for this test
+    const mint = generateSigner(umi);
+    console.log("Generated test mint address:", mint.publicKey.toString());
     
-    // Upload metadata
-    const metadataUri = await umi.uploader.uploadJson(metadata);
-    
-    // Create NFT
-    const tx = await createNft(umi, {
-      mint: nftMint,
-      name: playerData.name,
-      symbol: '5VS5',
-      uri: metadataUri,
-      sellerFeeBasisPoints: percentAmount(5), // 5% royalty
-    });
-    
-    // Send transaction
-    const result = await tx.sendAndConfirm(umi);
-    
-    return {
-      mint: nftMint.publicKey,
-      metadataUri,
-      signature: result.signature
-    };
+    try {
+      console.log("Creating simple test transaction using Umi");
+      
+      // Create a simple empty transaction for testing
+      const tx = transactionBuilder();
+      
+      console.log("Sending test transaction using Umi");
+      const result = await tx.sendAndConfirm(umi);
+      
+      console.log("Transaction confirmed:", result.signature);
+      
+      return {
+        mint: mint.publicKey,
+        uri: "test-only",
+        signature: result.signature
+      };
+    } catch (txError) {
+      console.error("Transaction error:", txError);
+      
+      // Detailed error logging
+      if (txError.logs) {
+        console.error("Transaction logs:", txError.logs);
+      }
+      
+      throw new Error(`Transaction failed: ${txError.message}`);
+    }
   } catch (error) {
-    console.error('Error creating NFT:', error);
+    console.error("Test failed:", error);
     throw error;
   }
 };

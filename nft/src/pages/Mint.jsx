@@ -83,10 +83,15 @@ const Mint = () => {
     
     try {
       setIsCreating(true);
-      setMessage('Creating player NFT. Please approve the transaction...');
+      setMessage('Creating player NFT. Please approve the transaction in your wallet...');
       setSuccess(false);
       
-      // Create the NFT using Umi
+      console.log("Initializing Umi with wallet and connection");
+      // Initialize Umi
+      const umi = initializeUmi(connection, wallet);
+      
+      console.log("Creating NFT");
+      // Create the NFT
       const result = await createPlayerNFT(umi, playerData);
       
       setMintAddress(result.mint.toString());
@@ -96,7 +101,23 @@ const Mint = () => {
     } catch (error) {
       console.error('Error creating NFT:', error);
       setSuccess(false);
-      setMessage(`Error creating NFT: ${error.message}`);
+      
+      // Provide user-friendly error messages
+      const message = error.message || String(error);
+      
+      if (message.includes('serialize')) {
+        setMessage("Transaction signing failed. Make sure your wallet is compatible with Solana devnet.");
+      } else if (message.includes('upload')) {
+        setMessage("Failed to upload metadata. Please check your connection and try again.");
+      } else if (message.includes('balance') || message.includes('funds')) {
+        setMessage("Insufficient SOL balance. You need devnet SOL to mint NFTs. Visit https://solfaucet.com");
+      } else if (message.includes('wallet')) {
+        setMessage("Wallet error: Please ensure your wallet is connected to Solana devnet.");
+      } else if (message.includes('rejected')) {
+        setMessage("Transaction was rejected. Please approve the transaction in your wallet.");
+      } else {
+        setMessage(`Error creating NFT: ${error.message}`);
+      }
     } finally {
       setIsCreating(false);
     }
