@@ -1,5 +1,4 @@
 import React from 'react'
-import InsertTokenButton from './InsertTokenButton'
 import Button from './ui/Button'
 
 const InsertToken = () => {

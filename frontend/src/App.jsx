@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AnimatedBackground from './AnimatedBackground';
 import Home from './pages/Home';
@@ -7,9 +7,65 @@ import Match from './pages/Match';
 import Marketplace from './pages/Marketplace';
 import Profile from './pages/Profile';
 import Logo from '../src/assets/img/5vs5dotgg_logo.png'
+import TeamDetailsPage from './pages/TeamDetails';
+import CreateMatchModal from './components/CreateMatchModal';
+import Loading from './components/Loading';
+import SplashScreen from './pages/SplashScreen';
+import WalletConnectPage from './pages/WalletConnect';
 
 
 function App() {
+  const [initialized, setInitialized] = useState(false);
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
+
+   // Check if wallet is connected on app startup
+  useEffect(() => {
+    // Check for existing wallet connection in localStorage
+    const checkWalletConnection = () => {
+      const walletConnected = localStorage.getItem('walletConnected') === 'true';
+      setIsWalletConnected(walletConnected);
+      setInitialized(true);
+      setLoading(false);
+    };
+    
+    // Simulate app initialization
+    const initTimer = setTimeout(() => {
+      checkWalletConnection();
+    }, 1000);
+    
+    return () => clearTimeout(initTimer);
+  }, []);
+
+  // Handle splash screen completion
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+  
+  // Auth check wrapper for protected routes
+  const ProtectedRoute = ({ children }) => {
+    if (loading) {
+      return <Loading />;
+    }
+    
+    if (!isWalletConnected) {
+      return <Navigate to="/connect-wallet" replace />;
+    }
+    
+    return children;
+  };
+  
+  // If app is still initializing, show loading
+  if (!initialized) {
+    return <Loading />;
+  }
+  
+  // Show splash screen on first load
+  if (showSplash) {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
   return (
     <BrowserRouter>
       <section className="fixed inset-0 z-0">
@@ -24,34 +80,66 @@ function App() {
                   <img src={Logo} alt="logo" className="w-20" />
                 </div>
                 <Routes>
+                    {/* Public routes */}
+                    <Route path="/connect-wallet" element={
+                      isWalletConnected ? <Navigate to="/" replace /> : <WalletConnectPage />
+                    } />
+
+                    {/* Protected routes */}
                     <Route 
                       path="/" 
                       element={
-                        <Home /> 
+                        <ProtectedRoute>
+                          <Home /> 
+                        </ProtectedRoute>
+                      } 
+                      />
+                    <Route 
+                      path="/home" 
+                      element={
+                        <ProtectedRoute>
+                          <Home /> 
+                        </ProtectedRoute>
+                      } 
+                      />
+                    <Route 
+                      path="/home/:teamId" 
+                      element={
+                        <ProtectedRoute>
+                          <TeamDetailsPage /> 
+                        </ProtectedRoute>
                       } 
                       />
                     <Route 
                       path="/match" 
                       element={
-                        <Match /> 
+                        <ProtectedRoute> 
+                          <Match /> 
+                        </ProtectedRoute>
+                      } 
+                      />
+                    <Route 
+                      path="/match/create" 
+                      element={
+                        <ProtectedRoute> 
+                          <CreateMatchModal /> 
+                        </ProtectedRoute>
                       } 
                       />
                     <Route 
                       path="/marketplace" 
                       element={
-                        <Marketplace /> 
+                        <ProtectedRoute> 
+                          <Marketplace /> 
+                        </ProtectedRoute>
                       } 
                       />
                     <Route 
                       path="/profile" 
                       element={
-                        <Profile /> 
-                      } 
-                      />
-                    <Route 
-                      path="/player/*" 
-                      element={
-                        <Home /> 
+                        <ProtectedRoute>
+                          <Profile /> 
+                        </ProtectedRoute>
                       } 
                       />
                     {/* Fallback route */}

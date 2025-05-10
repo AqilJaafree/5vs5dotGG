@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import NFTBox from '../components/NFTBox'
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Marketplace = () => {
   // State to store NFTs from the marketplace
@@ -42,11 +43,7 @@ const Marketplace = () => {
   }, []);
   
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-[calc(100svh-8rem)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-300"></div>
-      </div>
-    );
+    return <LoadingSpinner />
   }
   
   if (error) {
