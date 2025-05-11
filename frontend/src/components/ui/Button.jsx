@@ -20,15 +20,15 @@ const Button = ({
   
   // Variant styles
   const variantStyles = {
-    primary: 'bg-white outline-2 outline-black shadow-md  duration-300 text-black',
-    secondary: 'rounded-lg bg-white shadow-2xl text-black',
+    primary: 'bg-white outline-2 outline-black shadow-md duration-300 text-black w-auto h-10 hover:bg-[#FFA3FD] hover:shadow-md hover:shadow-[#FFA3FD]',
+    secondary: 'rounded-lg bg-white shadow-md text-black duration-300 hover:bg-[#FFA3FD] hover:shadow-sm hover:shadow-[#FFA3FD]',
     success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
     danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
     warning: 'bg-yellow-500 hover:bg-yellow-600 text-white focus:ring-yellow-400',
     info: 'bg-sky-500 hover:bg-sky-600 text-white focus:ring-sky-400',
     light: 'bg-gray-100 hover:bg-gray-200 text-gray-800 focus:ring-gray-300',
     dark: 'bg-gray-800 hover:bg-gray-900 text-white focus:ring-gray-700',
-    outline: 'bg-transparent outline-2 outline-white hover:bg-opacity-10 focus:outline-white',
+    outline: 'bg-transparent outline-2 outline-white hover:bg-opacity-10 focus:outline-white hover:bg-[#FFA3FD] hover:shadow-md hover:shadow-[#FFA3FD]',
     link: 'bg-transparent text-blue-600 hover:underline focus:ring-blue-500 p-0',
   };
   

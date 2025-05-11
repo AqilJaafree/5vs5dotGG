@@ -63,17 +63,16 @@ const TeamList = () => {
     return (
       <>
       <div>
-          <h2 className="text-2xl font-semibold text-center">Your Teams</h2>
+          <h2 className="text-2xl font-semibold text-center pb-2">Your Teams</h2>
           <div className="flex justify-center items-center">
-            <div className="w-72 h-72 rounded-xl outline-2 outline-white p-4 flex flex-col justify-center items-center">
+            <div className="w-72 h-72 rounded-xl outline-2 outline-[#865DFF] p-4 flex flex-col justify-center items-center">
               <div className="text-center text-xl pb-6 w-full">
-                <span className="block text-center">You don't have any team yet!</span>
+                <span className="block text-center text-lg">You don't have any team yet!</span>
               </div>
               <div className="flex justify-center items-center w-full">
                 <Button 
                   text="Create Team" 
                   variant="primary" 
-                  size="large"
                   onClick={handleCreateTeamClick}
                 />
               </div>

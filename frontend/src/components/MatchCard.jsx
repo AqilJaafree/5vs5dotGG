@@ -64,9 +64,9 @@ const MatchCard = ({ match, onJoinMatch }) => {
   const { formattedDate, formattedTime } = formatMatchDateTime();
   
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-purple-500 transition-colors">
+    <div className="bg-[#191825] rounded-lg overflow-hidden border border-gray-700 hover:border-purple-500 transition-colors">
       {/* Match status indicator */}
-      <div className="bg-purple-900 text-white px-3 py-1 flex items-center justify-between">
+      <div className="bg-[#191825] border-b border-b-gray-500 text-white px-3 py-1 flex items-center justify-between">
         <div className="flex items-center">
           <FontAwesomeIcon icon={faTrophy} className="mr-2" />
           <span className="font-medium">Match</span>
@@ -81,7 +81,7 @@ const MatchCard = ({ match, onJoinMatch }) => {
       
       {/* Match details */}
       <div className="p-4">
-        <h3 className="text-white font-bold text-lg mb-2">{match.name}</h3>
+        <h3 className="text-white font-bold mb-2 text-md">{match.name}</h3>
         
         <div className="space-y-2 mb-4">
           {/* Teams info */}
@@ -106,12 +106,6 @@ const MatchCard = ({ match, onJoinMatch }) => {
         
         {/* Action buttons */}
         <div className="grid grid-cols-1 gap-2">
-          {/* <Button 
-            text="View Details" 
-            variant="outline"
-            size="small"
-            onClick={handleViewMatch}
-          /> */}
           <Button 
             text="Join Match" 
             variant="primary"

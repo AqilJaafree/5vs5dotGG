@@ -3,7 +3,7 @@ import Button from '../components/ui/Button'
 
 const NFTBox = ({ image, name, price, id }) => {
   return (
-    <div className="bg-gray-800 p-4 rounded-lg shadow-lg w-full max-h-[calc(100svh-8rem)] overflow-hidden flex flex-col">
+    <div className="bg-[#865DFF] p-4 rounded-lg shadow-lg w-full max-h-[calc(100svh-8rem)] overflow-hidden flex flex-col">
       <div className="flex flex-col h-full justify-between">
         {/* NFT Image Container - Will scale appropriately */}
         <div className="flex justify-center items-center flex-grow">

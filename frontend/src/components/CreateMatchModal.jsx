@@ -141,7 +141,7 @@ const CreateMatchModal = ({ isOpen, onClose, onMatchCreated }) => {
     // Modal overlay
     <div className="fixed inset-0 bg-opacity-75 flex items-center justify-center z-50">
       {/* Modal container with fixed height and scrollable content */}
-      <div className="bg-gray-800 rounded-xl w-85 mx-4 flex flex-col h-[calc(100svh-12rem)]">
+      <div className="bg-[#191825] outline-2 outline-[#FFA3FD] rounded-xl w-85 mx-4 flex flex-col h-[calc(100svh-12rem)]">
         {/* Fixed header */}
         <div className="border-b border-gray-700 p-4 flex justify-between items-center">
           <h2 className="text-xl font-bold text-white">Create New Match</h2>
@@ -173,7 +173,7 @@ const CreateMatchModal = ({ isOpen, onClose, onMatchCreated }) => {
                 type="text"
                 value={matchName}
                 onChange={(e) => setMatchName(e.target.value)}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white"
+                className="w-full bg-white border border-white rounded-lg p-3 text-black"
                 placeholder="Enter match name"
               />
             </div>
@@ -187,17 +187,17 @@ const CreateMatchModal = ({ isOpen, onClose, onMatchCreated }) => {
                 <button 
                   type="button"
                   onClick={() => setTeamQuota(Math.max(2, teamQuota - 1))}
-                  className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-l-lg border border-gray-600"
+                  className="bg-white hover:bg-gray-300 text-black p-2 rounded-l-lg border border-gray-300"
                 >
                   -
                 </button>
-                <div className="px-4 py-2 bg-gray-700 border-t border-b border-gray-600 text-white">
+                <div className="px-4 py-2 bg-white border-t border-b border-white text-black">
                   {teamQuota} teams
                 </div>
                 <button 
                   type="button"
                   onClick={() => setTeamQuota(Math.min(10, teamQuota + 1))}
-                  className="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-r-lg border border-gray-600"
+                  className="bg-white hover:bg-gray-300 text-black p-2 rounded-r-lg border border-gray-300"
                 >
                   +
                 </button>
@@ -217,7 +217,7 @@ const CreateMatchModal = ({ isOpen, onClose, onMatchCreated }) => {
                   type="date"
                   value={matchDate}
                   onChange={(e) => setMatchDate(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white"
+                  className="w-full bg-white border border-white rounded-lg p-3 text-black"
                 />
               </div>
               <div>
@@ -228,7 +228,7 @@ const CreateMatchModal = ({ isOpen, onClose, onMatchCreated }) => {
                   type="time"
                   value={matchTime}
                   onChange={(e) => setMatchTime(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white"
+                  className="w-full bg-white border border-white rounded-lg p-3 text-black"
                 />
               </div>
             </div>
@@ -262,7 +262,7 @@ const CreateMatchModal = ({ isOpen, onClose, onMatchCreated }) => {
                   type="text"
                   value={matchPassword}
                   onChange={(e) => setMatchPassword(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white"
+                  className="w-full bg-white border border-white rounded-lg p-3 text-black"
                   placeholder="Enter password for private match"
                 />
               </div>

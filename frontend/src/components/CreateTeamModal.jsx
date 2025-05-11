@@ -312,7 +312,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                 type="text"
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white"
+                className="w-full bg-white border border-gray-600 rounded-lg p-3 text-black"
                 placeholder="Enter team name"
               />
             </div>
@@ -322,7 +322,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
               <textarea
                 value={teamDescription}
                 onChange={(e) => setTeamDescription(e.target.value)}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white h-32"
+                className="w-full bg-white border border-gray-600 rounded-lg p-3 text-black h-32"
                 placeholder="Enter team description (optional)"
               />
             </div>
@@ -333,7 +333,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
         return (
           // Step 2: NFT Selection
           <div>
-            <p className="text-gray-300 mb-4">
+            <p className="text-gray-300 mb-2">
               Select up to 5 heroes for your team. You have selected {selectedNFTs.length}/5 heroes.
             </p>
             
@@ -350,7 +350,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                       <img 
                         src={nft.image} 
                         alt={nft.name} 
-                        className="w-8 h-8 mr-2 rounded"
+                        className="w-8 h-8 rounded"
                       />
                       <span className="text-white">{nft.name}</span>
                       <button 
@@ -366,7 +366,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
             )}
             
             {/* Available NFTs */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {availableNFTs.map(nft => {
                 const isSelected = selectedNFTs.some(selected => selected.id === nft.id);
                 const isDisabled = !isSelected && selectedNFTs.length >= 5;
@@ -377,8 +377,8 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                     onClick={() => !isDisabled && toggleNFTSelection(nft)}
                     className={`
                       border rounded-lg p-2 cursor-pointer transition-all
-                      ${isSelected ? 'border-purple-500 bg-purple-900 bg-opacity-50' : 'border-gray-700'}
-                      ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-purple-500'}
+                      ${isSelected ? 'border-[#E384FF] bg-purple-900 bg-opacity-50' : 'border-gray-700'}
+                      ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#E384FF]'}
                     `}
                   >
                     <div className="aspect-square mb-2 overflow-hidden rounded">
@@ -427,7 +427,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                           <img 
                             src={roleAssignments.TOP.image} 
                             alt={roleAssignments.TOP.name}
-                            className="w-16 h-16 rounded-full border-2 border-purple-500"
+                            className="w-10 h-10 rounded-full border-2 border-purple-500"
                           />
                           <button 
                             onClick={(e) => { e.stopPropagation(); removeFromRole('TOP'); }}
@@ -455,7 +455,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                           <img 
                             src={roleAssignments.MID.image} 
                             alt={roleAssignments.MID.name}
-                            className="w-16 h-16 rounded-full border-2 border-purple-500"
+                            className="w-10 h-10 rounded-full border-2 border-purple-500"
                           />
                           <button 
                             onClick={(e) => { e.stopPropagation(); removeFromRole('MID'); }}
@@ -483,7 +483,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                           <img 
                             src={roleAssignments.BOT.image} 
                             alt={roleAssignments.BOT.name}
-                            className="w-16 h-16 rounded-full border-2 border-purple-500"
+                            className="w-10 h-10 rounded-full border-2 border-purple-500"
                           />
                           <button 
                             onClick={(e) => { e.stopPropagation(); removeFromRole('BOT'); }}
@@ -511,7 +511,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                           <img 
                             src={roleAssignments.JUNGLER.image} 
                             alt={roleAssignments.JUNGLER.name}
-                            className="w-14 h-14 rounded-full border-2 border-purple-500"
+                            className="w-10 h-10 rounded-full border-2 border-purple-500"
                           />
                           <button 
                             onClick={(e) => { e.stopPropagation(); removeFromRole('JUNGLER'); }}
@@ -539,7 +539,7 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                           <img 
                             src={roleAssignments.SUPPORT.image} 
                             alt={roleAssignments.SUPPORT.name}
-                            className="w-14 h-14 rounded-full border-2 border-purple-500"
+                            className="w-10 h-10 rounded-full border-2 border-purple-500"
                           />
                           <button 
                             onClick={(e) => { e.stopPropagation(); removeFromRole('SUPPORT'); }}
@@ -593,12 +593,12 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
                           />
                           <div>
                             {/* <div className="text-white font-medium">{nft.name}</div> */}
-                            <div className="text-center text-xs text-gray-400">{nft.class}</div>
-                            {assignedRole && (
+                            {/* <div className="text-center text-xs text-gray-400">{nft.class}</div> */}
+                            {/* {assignedRole && (
                               <div className="text-xs text-purple-400 mt-1">
                                 {ROLES[assignedRole]}
                               </div>
-                            )}
+                            )} */}
                           </div>
                         </div>
                       );
@@ -664,71 +664,72 @@ const CreateTeamModal = ({ isOpen, onClose, onTeamCreated }) => {
     // Modal overlay
     <div className="fixed inset-0 bg-opacity-75 flex items-center justify-center z-50">
       {/* Modal container with fixed height and scrollable content */}
-      <div className="bg-gray-800 rounded-xl w-85 mx-4 flex flex-col h-[calc(100svh-12rem)]">
-        {/* Fixed header */}
-        <div className="border-b border-gray-700 p-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">
-            {step === 1 ? 'Create New Team' : 
-             step === 2 ? 'Select Team Heroes' : 
-             'Assign Hero Roles'}
-          </h2>
-          <button 
-            onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl"
-          >
-            &times;
-          </button>
-        </div>
-        
-        {/* Fixed progress indicator */}
-        <div className="bg-gray-900 px-6 py-3 border-b border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className={`rounded-full h-8 w-8 flex items-center justify-center ${
-                step >= 1 ? 'bg-purple-600' : 'bg-gray-700'
-              }`}>
-                1
+        <div className="bg-[#191825] outline-2 outline-[#FFA3FD] shadow-md rounded-xl w-85 mx-4 flex flex-col h-[calc(100svh-12rem)]">
+          {/* Fixed header */}
+          <div className="border-b border-gray-700 p-4 flex justify-between items-center">
+            <h2 className="text-xl font-bold text-white">
+              {step === 1 ? 'Create New Team' : 
+              step === 2 ? 'Select Team Heroes' : 
+              'Assign Hero Roles'}
+            </h2>
+            <button 
+              onClick={onClose}
+              className="text-gray-400 hover:text-white text-2xl"
+            >
+              &times;
+            </button>
+          </div>
+          
+          {/* Fixed progress indicator */}
+          <div className="bg-gray-900 px-6 py-3 border-b border-gray-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className={`rounded-full h-8 w-8 flex items-center justify-center ${
+                  step >= 1 ? 'bg-[#E384FF]' : 'bg-gray-700'
+                }`}>
+                  1
+                </div>
+                <div className={`h-1 w-12 ${
+                  step > 1 ? 'bg-[#E384FF]' : 'bg-gray-700'
+                }`}></div>
+                <div className={`rounded-full h-8 w-8 flex items-center justify-center ${
+                  step >= 2 ? 'bg-[#E384FF]' : 'bg-gray-700'
+                }`}>
+                  2
+                </div>
+                <div className={`h-1 w-12 ${
+                  step > 2 ? 'bg-[#E384FF]' : 'bg-gray-700'
+                }`}></div>
+                <div className={`rounded-full h-8 w-8 flex items-center justify-center ${
+                  step >= 3 ? 'bg-[#E384FF]' : 'bg-gray-700'
+                }`}>
+                  3
+                </div>
               </div>
-              <div className={`h-1 w-12 ${
-                step > 1 ? 'bg-purple-600' : 'bg-gray-700'
-              }`}></div>
-              <div className={`rounded-full h-8 w-8 flex items-center justify-center ${
-                step >= 2 ? 'bg-purple-600' : 'bg-gray-700'
-              }`}>
-                2
+              <div className="text-sm text-gray-400">
+                Step {step} of 3
               </div>
-              <div className={`h-1 w-12 ${
-                step > 2 ? 'bg-purple-600' : 'bg-gray-700'
-              }`}></div>
-              <div className={`rounded-full h-8 w-8 flex items-center justify-center ${
-                step >= 3 ? 'bg-purple-600' : 'bg-gray-700'
-              }`}>
-                3
-              </div>
-            </div>
-            <div className="text-sm text-gray-400">
-              Step {step} of 3
             </div>
           </div>
-        </div>
-        
-        {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto py-2 px-6 scrollbar-hide">
-          {/* Error message */}
-          {error && (
-            <div className="bg-red-900 text-white p-3 rounded-lg mb-4">
-              {error}
-            </div>
-          )}
           
-          {/* Dynamic content based on current step */}
-          {renderStepContent()}
-        </div>
-        
-        {/* Fixed footer */}
-        <div className="border-t border-gray-700 p-4 flex justify-between bg-gray-800 rounded-b-xl">
-          {renderFooterButtons()}
-        </div>
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto py-2 px-6 scrollbar-hide">
+            {/* Error message */}
+            {error && (
+              <div className="bg-red-900 text-white p-3 rounded-lg mb-4">
+                {error}
+              </div>
+            )}
+            
+            {/* Dynamic content based on current step */}
+            {renderStepContent()}
+          </div>
+          
+          {/* Fixed footer */}
+          <div className="border-t border-gray-700 p-4 flex justify-between bg-gray-800 rounded-b-xl">
+            {renderFooterButtons()}
+          </div>
+
       </div>
     </div>
   );

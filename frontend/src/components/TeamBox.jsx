@@ -22,7 +22,7 @@ const TeamBox = ({ id, teamName, memberCount, isAddButton = false, onClick }) =>
   if (isAddButton || (!teamName && !id)) {
     return (
       <div 
-        className="w-20 h-20 rounded-xl outline-1 outline-white flex items-center justify-center cursor-pointer hover:bg-gray-800 transition-colors"
+        className="w-20 h-20 rounded-xl outline-2 outline-[#865DFF] flex items-center justify-center cursor-pointer hover:bg-[#865DFF] transition-colors"
         onClick={onClick}
       >
         <FontAwesomeIcon 
@@ -40,12 +40,12 @@ const TeamBox = ({ id, teamName, memberCount, isAddButton = false, onClick }) =>
   // Regular team box with minimal team information (due to smaller size)
   return (
     <div 
-      className="w-20 h-20 rounded-xl outline-1 outline-white bg-gray-800 flex flex-col items-center justify-center p-2 cursor-pointer hover:bg-gray-700 transition-colors"
+      className="w-20 h-20 rounded-xl outline-2 outline-[#865DFF] flex flex-col items-center justify-center p-2 cursor-pointer hover:bg-[#865DFF] transition-colors"
       onClick={handleTeamClick}
     >
       {/* Team initials/avatar */}
-      <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mb-1">
-        <span className="text-xs font-bold">
+      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-1 text-black">
+        <span className="text-xs font-bold ">
           {teamName ? teamName.substring(0, 2).toUpperCase() : "T"}
         </span>
       </div>

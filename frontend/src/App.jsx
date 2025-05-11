@@ -74,15 +74,15 @@ function App() {
 
         <div className="">
           <div className="relative z-10 h-[100dvh]"> 
-            <div className="relative h-[100svh] text-white pt-10 pb-2 max-w-sm mx-auto flex flex-col gap-2.5 px-2 xs:px-0">
-              <div className="h-[calc(100svh-8rem)] flex-1 mx-auto w-full bg-black rounded-xl shadow-xl">
+            <div className="relative h-[100svh] text-white pt-4 pb-2 max-w-sm mx-auto flex flex-col gap-2.5 px-2 ">
+              <div className="h-[calc(100svh-8rem)] flex-1 mx-auto w-full bg-[#191825] rounded-xl">
                 <div className="flex justify-center items-center pt-4">
                   <img src={Logo} alt="logo" className="w-20" />
                 </div>
                 <Routes>
                     {/* Public routes */}
                     <Route path="/connect-wallet" element={
-                      isWalletConnected ? <Navigate to="/" replace /> : <WalletConnectPage />
+                       <WalletConnectPage />
                     } />
 
                     {/* Protected routes */}

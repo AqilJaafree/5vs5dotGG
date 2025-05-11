@@ -12,12 +12,7 @@ const WalletConnectPage = () => {
   
   // Available wallet options
   const wallets = [
-    { id: 'metamask', name: 'MetaMask', icon: '🦊', popular: true },
-    { id: 'coinbase', name: 'Coinbase Wallet', icon: '🔵', popular: true },
-    { id: 'walletconnect', name: 'WalletConnect', icon: '🔗', popular: true },
-    { id: 'phantom', name: 'Phantom', icon: '👻', popular: false },
-    { id: 'brave', name: 'Brave Wallet', icon: '🦁', popular: false },
-    { id: 'trustwallet', name: 'Trust Wallet', icon: '🔐', popular: false },
+    { id: 'phantom', name: 'Phantom', icon: '👻' },
   ];
   
   // Handle connect wallet
@@ -56,57 +51,23 @@ const WalletConnectPage = () => {
   
   return (
     <div className="h-[calc(100svh-8rem)] flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden">
+      <div className="max-w-md w-full bg-[#865DFF] rounded-xl shadow-xl p-6 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-purple-900 opacity-20"></div>
         <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-blue-900 opacity-20"></div>
         
         {/* Header */}
-        <div className="text-center mb-8 relative">
-          <h1 className="text-3xl font-bold text-white mb-2">Connect Wallet</h1>
-          <p className="text-gray-400">
-            Connect your wallet to play MOBA³
+        <div className="text-center mb-4 relative">
+          <h1 className="text-2xl font-bold text-white mb-2">Connect Wallet</h1>
+          <p className="text-white text-xs">
+            Connect your wallet to play
           </p>
         </div>
         
         {/* Wallet options */}
-        <div className="space-y-3 mb-6 relative">
-          {/* Popular wallets */}
-          <div className="mb-4">
-            <div className="text-sm text-gray-400 mb-2">Popular wallets</div>
-            <div className="grid grid-cols-2 gap-3">
-              {wallets.filter(wallet => wallet.popular).map(wallet => (
-                <button
-                  key={wallet.id}
-                  onClick={() => handleConnectWallet(wallet.id)}
-                  disabled={connecting}
-                  className={`
-                    relative p-4 rounded-lg border border-gray-700 bg-gray-800 
-                    flex items-center transition-all
-                    ${connecting && selectedWallet === wallet.id 
-                      ? 'border-purple-500 bg-purple-900 bg-opacity-20' 
-                      : 'hover:border-purple-500 hover:bg-gray-700'
-                    }
-                  `}
-                >
-                  <div className="mr-3 text-2xl">{wallet.icon}</div>
-                  <div className="text-left">
-                    <div className="text-white font-medium">{wallet.name}</div>
-                    <div className="text-xs text-gray-400">Popular</div>
-                  </div>
-                  {connecting && selectedWallet === wallet.id && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-70 rounded-lg">
-                      <FontAwesomeIcon icon={faCircleNotch} spin className="text-purple-500 text-2xl" />
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          {/* Other wallets */}
+        <div className="space-y-3 relative">         
+          {/* Wallets */}
           <div>
-            <div className="text-sm text-gray-400 mb-2">Other wallets</div>
             <div className="space-y-2">
               {wallets.filter(wallet => !wallet.popular).map(wallet => (
                 <button
@@ -114,7 +75,7 @@ const WalletConnectPage = () => {
                   onClick={() => handleConnectWallet(wallet.id)}
                   disabled={connecting}
                   className={`
-                    relative w-full p-3 rounded-lg border border-gray-700 bg-gray-800 
+                    relative w-full p-3 rounded-lg border border-[#191825] bg-[#191825]
                     flex items-center transition-all
                     ${connecting && selectedWallet === wallet.id 
                       ? 'border-purple-500 bg-purple-900 bg-opacity-20' 
@@ -125,7 +86,7 @@ const WalletConnectPage = () => {
                   <div className="mr-3 text-xl">{wallet.icon}</div>
                   <div className="text-white">{wallet.name}</div>
                   {connecting && selectedWallet === wallet.id && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-70 rounded-lg">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#191825] bg-opacity-70 rounded-lg">
                       <FontAwesomeIcon icon={faCircleNotch} spin className="text-purple-500 text-xl" />
                     </div>
                   )}
@@ -141,20 +102,9 @@ const WalletConnectPage = () => {
             {error}
           </div>
         )}
-        
-        {/* Skip option for development */}
-        <div className="relative">
-          <Button 
-            text="Skip for Development" 
-            variant="outline" 
-            size="small"
-            onClick={() => navigate('/')}
-            className="w-full"
-          />
-        </div>
-        
+    
         {/* Info footer */}
-        <div className="mt-8 text-center text-xs text-gray-500">
+        {/* <div className="mt-8 text-center text-xs text-gray-500">
           <p className="mb-2">
             By connecting your wallet, you agree to our Terms of Service and Privacy Policy.
           </p>
@@ -168,7 +118,7 @@ const WalletConnectPage = () => {
               <span>Secure connection</span>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -90,106 +90,25 @@ const MatchesList = () => {
     setFilteredMatches(result);
   }, [matches, filterOptions, searchTerm]);
   
-  // Handle filter clicks
-//   const handleFilterChange = (filter) => {
-//     if (filter === 'showAll') {
-//       setFilterOptions({
-//         showAll: true,
-//         showPublic: false,
-//         showPrivate: false,
-//         showAvailable: false
-//       });
-//     } else {
-//       setFilterOptions({
-//         ...filterOptions,
-//         showAll: false,
-//         [filter]: !filterOptions[filter]
-//       });
-//     }
-//   };
-  
   // Handle creating a new match
   const handleCreateMatch = (newMatch) => {
     setMatches([newMatch, ...matches]);
   };
   
-  // Handle search input
-//   const handleSearchChange = (e) => {
-//     setSearchTerm(e.target.value);
-//   };
-  
   return (
-    <div className="h-[calc(100svh-14rem)] bg-gray-900 rounded-xl text-white flex flex-col overflow-hidden">
+    <div className="h-[calc(100svh-14rem)] bg-[#865DFF] rounded-xl text-white flex flex-col overflow-hidden">
       {/* Fixed header */}
-      <div className="p-4 border-b border-gray-800 bg-gray-900 z-10">
+      <div className="p-4 border-b border-gray-800 bg-[#865DFF] z-10">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold">Available Matches</h1>
+            <h1 className="text-lg font-bold">Available Matches</h1>
             <Button 
               text="Create Match" 
               variant="primary"
+              size="small"
               onClick={() => setIsModalOpen(true)}
-              icon={<FontAwesomeIcon icon={faPlus} className="mr-2" />}
             />
           </div>
-          
-          {/* Search bar */}
-          {/* <div className="relative mb-4">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FontAwesomeIcon icon={faSearch} className="text-gray-500" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search matches..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="bg-gray-800 border border-gray-700 rounded-lg py-2 pl-10 pr-4 w-full text-white focus:border-purple-500 focus:outline-none"
-            />
-          </div> */}
-          
-          {/* Filter tabs */}
-          {/* <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => handleFilterChange('showAll')}
-              className={`px-3 py-1 rounded-full text-sm ${
-                filterOptions.showAll 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
-              All Matches
-            </button>
-            <button
-              onClick={() => handleFilterChange('showPublic')}
-              className={`px-3 py-1 rounded-full text-sm ${
-                filterOptions.showPublic && !filterOptions.showAll
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
-              Public Only
-            </button>
-            <button
-              onClick={() => handleFilterChange('showPrivate')}
-              className={`px-3 py-1 rounded-full text-sm ${
-                filterOptions.showPrivate && !filterOptions.showAll
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
-              Private Only
-            </button>
-            <button
-              onClick={() => handleFilterChange('showAvailable')}
-              className={`px-3 py-1 rounded-full text-sm ${
-                filterOptions.showAvailable && !filterOptions.showAll
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
-              Available Slots
-            </button>
-          </div> */}
         </div>
       </div>
       
@@ -199,7 +118,7 @@ const MatchesList = () => {
           {/* Loading state */}
           {loading ? (
             <div className="flex justify-center items-center h-85">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-300"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#865DFF]"></div>
             </div>
           ) : error ? (
             <div className="bg-red-900 text-white p-4 rounded-lg">
