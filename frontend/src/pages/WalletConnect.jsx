@@ -35,15 +35,41 @@ const safeLocalStorage = {
   }
 };
 
+// Detect browser
+const detectBrowser = () => {
+  const userAgent = navigator.userAgent;
+  
+  if (userAgent.includes('Opera') || userAgent.includes('OPR')) {
+    return 'Opera';
+  } else if (userAgent.includes('Chrome')) {
+    return 'Chrome';
+  } else if (userAgent.includes('Firefox')) {
+    return 'Firefox';
+  } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+    return 'Safari';
+  } else if (userAgent.includes('Edge') || userAgent.includes('Edg')) {
+    return 'Edge';
+  } else {
+    return 'Unknown Browser';
+  }
+};
+
 const WalletConnectPage = () => {
   const navigate = useNavigate();
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState(null);
   const [redirectInProgress, setRedirectInProgress] = useState(false);
   const [reconnectionAttempted, setReconnectionAttempted] = useState(false);
+  const [browserType, setBrowserType] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
   
   // Use the wallet adapter
-  const { publicKey, connected, disconnect } = useWallet();
+  const { publicKey, connected, disconnect, wallets } = useWallet();
+
+  // Detect browser on mount
+  useEffect(() => {
+    setBrowserType(detectBrowser());
+  }, []);
   
   // Handle errors
   const handleError = useCallback((message) => {
@@ -110,6 +136,38 @@ const WalletConnectPage = () => {
       handleError("Failed to disconnect wallet: " + err.message);
     }
   };
+
+  // Direct connection to Solflare (for Opera)
+  const connectDirectlyToSolflare = async () => {
+    try {
+      if (window.solflare) {
+        console.log("Attempting direct connection to Solflare...");
+        setConnecting(true);
+        
+        try {
+          await window.solflare.connect();
+          console.log("Successfully connected to Solflare directly");
+          safeLocalStorage.setItem('walletConnected', 'true');
+          
+          // Redirect after short delay
+          setTimeout(() => {
+            navigate('/', { replace: true });
+          }, 1000);
+        } catch (err) {
+          console.error("Direct Solflare connection failed:", err);
+          handleError("Failed to connect to Solflare: " + err.message);
+        } finally {
+          setConnecting(false);
+        }
+      } else {
+        handleError("Solflare extension not detected. Please install it first.");
+      }
+    } catch (err) {
+      console.error("Error checking for Solflare:", err);
+      handleError("Error checking for Solflare: " + err.message);
+      setConnecting(false);
+    }
+  };
   
   return (
     <div className="h-[calc(100svh-8rem)] flex flex-col items-center justify-center p-4">
@@ -119,12 +177,45 @@ const WalletConnectPage = () => {
         <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-blue-900 opacity-20"></div>
         
         {/* Header */}
-        <div className="text-center mb-8 relative">
+        <div className="text-center mb-6 relative">
           <h1 className="text-2xl font-bold text-white mb-2">Connect Wallet</h1>
           <p className="text-white text-sm">
             Connect your Solana wallet to play the game
           </p>
+          {browserType && (
+            <p className="text-xs text-white mt-2 opacity-70">
+              Detected: {browserType} 
+              <button 
+                className="ml-2 text-purple-300 underline text-xs"
+                onClick={() => setShowHelp(!showHelp)}
+              >
+                {showHelp ? "Hide help" : "Need help?"}
+              </button>
+            </p>
+          )}
         </div>
+        
+        {/* Browser-specific help */}
+        {showHelp && (
+          <div className="mb-4 p-3 bg-purple-900 bg-opacity-40 rounded-lg text-white text-xs">
+            <h3 className="font-bold mb-2">Wallet Connection Tips:</h3>
+            {browserType === 'Opera' ? (
+              <ul className="list-disc list-inside space-y-1">
+                <li>Make sure Solflare extension is properly installed</li>
+                <li>Try the direct connection option below if the wallet button doesn't work</li>
+                <li>Check if Solflare appears in Opera's extension sidebar</li>
+                <li>Try using Brave or Chrome for better wallet compatibility</li>
+              </ul>
+            ) : (
+              <ul className="list-disc list-inside space-y-1">
+                <li>Ensure your wallet extension is installed and enabled</li>
+                <li>If using a hardware wallet, make sure it's connected</li>
+                <li>Some wallets may require you to unlock them first</li>
+                <li>Try refreshing the page if wallet doesn't appear</li>
+              </ul>
+            )}
+          </div>
+        )}
         
         {/* Connection status */}
         <div className="text-center mb-6">
@@ -148,13 +239,44 @@ const WalletConnectPage = () => {
           </div>
         </div>
         
-        {/* Wallet connection button */}
-        <div className="wallet-adapter-button-container flex justify-center mb-8">
+        {/* Wallet connection buttons */}
+        <div className="flex flex-col items-center space-y-4 mb-6">
           {!connected ? (
-            <WalletMultiButton />
+            <>
+              {/* Standard wallet adapter button */}
+              <div className="wallet-adapter-button-container flex justify-center w-full">
+                <WalletMultiButton />
+              </div>
+              
+              {/* Opera-specific direct connection */}
+              {browserType === 'Opera' && (
+                <button
+                  onClick={connectDirectlyToSolflare}
+                  disabled={connecting}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {connecting ? (
+                    <>
+                      <FontAwesomeIcon icon={faCircleNotch} className="animate-spin mr-2" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <img 
+                        src="https://solflare.com/favicon-32x32.png" 
+                        alt="Solflare" 
+                        className="w-5 h-5 mr-2"
+                        onError={(e) => e.target.style.display = 'none'}
+                      />
+                      Connect to Solflare Directly
+                    </>
+                  )}
+                </button>
+              )}
+            </>
           ) : redirectInProgress ? (
             <button 
-              className="bg-gray-700 text-white py-2 px-4 rounded-lg opacity-50 cursor-not-allowed"
+              className="bg-gray-700 text-white py-2 px-4 rounded-lg opacity-50 cursor-not-allowed w-full"
               disabled
             >
               <FontAwesomeIcon icon={faCircleNotch} className="animate-spin mr-2" />
@@ -187,7 +309,7 @@ const WalletConnectPage = () => {
         )}
     
         {/* Info footer */}
-        <div className="mt-8 text-center text-xs text-white text-opacity-70">
+        <div className="mt-4 text-center text-xs text-white text-opacity-70">
           <p className="mb-2">
             By connecting your wallet, you agree to our Terms of Service and Privacy Policy.
           </p>

@@ -37,6 +37,25 @@ const safeLocalStorage = {
   }
 };
 
+// Detect browser type
+const detectBrowser = () => {
+  const userAgent = navigator.userAgent;
+  
+  if (userAgent.includes('Opera') || userAgent.includes('OPR')) {
+    return 'opera';
+  } else if (userAgent.includes('Chrome')) {
+    return 'chrome';
+  } else if (userAgent.includes('Firefox')) {
+    return 'firefox';
+  } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+    return 'safari';
+  } else if (userAgent.includes('Edge') || userAgent.includes('Edg')) {
+    return 'edge';
+  } else {
+    return 'unknown';
+  }
+};
+
 // Create a component to handle wallet connection events
 const WalletConnectionManager = () => {
   const { connected, publicKey } = useWallet();
@@ -63,22 +82,47 @@ const WalletConnectionManager = () => {
 const WalletContextProvider = ({ children }) => {
   // Set up network - you can change to 'mainnet-beta' for production
   const network = WalletAdapterNetwork.Devnet;
+  const browserType = detectBrowser();
 
   // RPC endpoint for Solana connection
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
-  // Wallets that you want to support
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-    ],
-    []
-  );
+  // Log browser type on mount
+  useEffect(() => {
+    console.log(`Browser detected: ${browserType}`);
+  }, [browserType]);
+
+  // Configure wallet adapters based on browser
+  const wallets = useMemo(() => {
+    const adapters = [];
+    
+    // For Opera, prioritize Solflare and use special configuration
+    if (browserType === 'opera') {
+      // Add Solflare with special config for Opera
+      adapters.push(new SolflareWalletAdapter({ network }));
+      adapters.push(new PhantomWalletAdapter());
+
+      
+      // Check for direct Solflare instance in Opera
+      if (window.solflare) {
+        console.log('Direct Solflare instance detected in Opera');
+      }
+    } else {
+      // Standard configuration for other browsers
+      adapters.push(new PhantomWalletAdapter());
+      adapters.push(new SolflareWalletAdapter());
+    }
+    
+    return adapters;
+  }, [network, browserType]);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={false}>
+      <WalletProvider 
+        wallets={wallets} 
+        autoConnect={false}
+        onError={(error) => console.error('Wallet error:', error)}
+      >
         <WalletModalProvider>
           <WalletConnectionManager />
           {children}
