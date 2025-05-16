@@ -1,0 +1,35 @@
+{
+  "collection": "5xpd819DT31WQCKBmEokY8CB3TyGtC2ohmPv34SB1hmw",
+  "nfts": [
+    {
+      "mint": "9toZrBm9QSRRPC9QaU1SAH45D78pp6GrHeSxAYLARF2T",
+      "name": "5VS5 Player #1",
+      "position": "Bot Lane",
+      "class": "Tank",
+      "attributes": {
+        "mechanical": 89,
+        "gameKnowledge": 62,
+        "teamCommunication": 78,
+        "adaptability": 62,
+        "consistency": 86,
+        "form": 63,
+        "potential": 96
+      }
+    },
+    {
+      "mint": "AACcBLUi4k4DL7TgcHRjB2nhV77xSWMNq8citsQZ9Yfc",
+      "name": "5VS5 Player #2",
+      "position": "Top Lane",
+      "class": "Assassin",
+      "attributes": {
+        "mechanical": 87,
+        "gameKnowledge": 69,
+        "teamCommunication": 80,
+        "adaptability": 86,
+        "consistency": 78,
+        "form": 82,
+        "potential": 93
+      }
+    }
+  ]
+}

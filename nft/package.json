@@ -2,9 +2,14 @@
   "name": "nft",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create-nft": "node --loader ts-node/esm create-token-umi.ts",
+    "mint-game": "node --loader ts-node/esm mint-game-nfts.ts",
+    "mint-standard": "node --loader ts-node/esm mint-standard-nfts.ts",
+    "mint-simple": "node --loader ts-node/esm mint-simple-nfts.ts"
   },
   "keywords": [],
   "author": "",
