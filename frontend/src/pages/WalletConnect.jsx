@@ -1,53 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWallet, faLink, faShieldAlt, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import Button from '../components/ui/Button';
+
+// Import wallet adapter styles - custom styles will override these
+import '@solana/wallet-adapter-react-ui/styles.css';
+import './WalletAdapterStyles.css';
 
 const WalletConnectPage = () => {
   const navigate = useNavigate();
   const [connecting, setConnecting] = useState(false);
-  const [selectedWallet, setSelectedWallet] = useState(null);
   const [error, setError] = useState(null);
   
-  // Available wallet options
-  const wallets = [
-    { id: 'phantom', name: 'Phantom', icon: '👻' },
-  ];
+  // Use the wallet adapter
+  const { publicKey, connected } = useWallet();
   
-  // Handle connect wallet
-  const handleConnectWallet = async (walletId) => {
-    try {
-      setError(null);
-      setSelectedWallet(walletId);
-      setConnecting(true);
+  // Monitor wallet connection status
+  useEffect(() => {
+    if (connected && publicKey) {
+      // Save connection status to localStorage
+      localStorage.setItem('walletConnected', 'true');
+      localStorage.setItem('walletAddress', publicKey.toString());
       
-      // Simulate wallet connection
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Check if wallet is installed
-      const walletInstalled = walletId === 'metamask' || walletId === 'coinbase';
-      
-      if (!walletInstalled) {
-        throw new Error(`${wallets.find(w => w.id === walletId).name} not detected. Please install the wallet extension.`);
-      }
-      
-      // Simulate successful connection
+      // Give a small delay to show the connected state before redirecting
       setTimeout(() => {
-        // Save wallet connection to localStorage
-        localStorage.setItem('walletConnected', 'true');
-        localStorage.setItem('walletType', walletId);
-        
-        // Navigate to home page
         navigate('/');
       }, 1000);
-      
-    } catch (err) {
-      console.error('Wallet connection error:', err);
-      setError(err.message);
-      setConnecting(false);
     }
-  };
+  }, [connected, publicKey, navigate]);
   
   return (
     <div className="h-[calc(100svh-8rem)] flex flex-col items-center justify-center p-4">
@@ -57,43 +39,28 @@ const WalletConnectPage = () => {
         <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-blue-900 opacity-20"></div>
         
         {/* Header */}
-        <div className="text-center mb-4 relative">
+        <div className="text-center mb-8 relative">
           <h1 className="text-2xl font-bold text-white mb-2">Connect Wallet</h1>
-          <p className="text-white text-xs">
-            Connect your wallet to play
+          <p className="text-white text-sm">
+            Connect your Solana wallet to play the game
           </p>
         </div>
         
-        {/* Wallet options */}
-        <div className="space-y-3 relative">         
-          {/* Wallets */}
-          <div>
-            <div className="space-y-2">
-              {wallets.filter(wallet => !wallet.popular).map(wallet => (
-                <button
-                  key={wallet.id}
-                  onClick={() => handleConnectWallet(wallet.id)}
-                  disabled={connecting}
-                  className={`
-                    relative w-full p-3 rounded-lg border border-[#191825] bg-[#191825]
-                    flex items-center transition-all
-                    ${connecting && selectedWallet === wallet.id 
-                      ? 'border-purple-500 bg-purple-900 bg-opacity-20' 
-                      : 'hover:border-purple-500 hover:bg-gray-700'
-                    }
-                  `}
-                >
-                  <div className="mr-3 text-xl">{wallet.icon}</div>
-                  <div className="text-white">{wallet.name}</div>
-                  {connecting && selectedWallet === wallet.id && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-[#191825] bg-opacity-70 rounded-lg">
-                      <FontAwesomeIcon icon={faCircleNotch} spin className="text-purple-500 text-xl" />
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
+        {/* Connection status */}
+        <div className="text-center mb-6">
+          <div className={`inline-flex items-center px-4 py-2 rounded-full ${
+            connected ? 'bg-green-900 text-green-300' : 'bg-yellow-900 text-yellow-300'
+          }`}>
+            <span className="mr-2">
+              {connected ? '● Connected' : '○ Not Connected'}
+            </span>
+            {connected && <span className="text-xs">{publicKey.toString().slice(0, 6)}...{publicKey.toString().slice(-4)}</span>}
           </div>
+        </div>
+        
+        {/* Wallet connection button */}
+        <div className="wallet-adapter-button-container flex justify-center mb-8">
+          <WalletMultiButton />
         </div>
         
         {/* Error message */}
@@ -104,21 +71,21 @@ const WalletConnectPage = () => {
         )}
     
         {/* Info footer */}
-        {/* <div className="mt-8 text-center text-xs text-gray-500">
+        <div className="mt-8 text-center text-xs text-white text-opacity-70">
           <p className="mb-2">
             By connecting your wallet, you agree to our Terms of Service and Privacy Policy.
           </p>
-          <div className="flex justify-center gap-6">
+          <div className="flex justify-center gap-6 mt-4">
             <div className="flex items-center">
               <FontAwesomeIcon icon={faLink} className="mr-1" />
-              <span>Blockchain connection</span>
+              <span>Solana Blockchain</span>
             </div>
             <div className="flex items-center">
               <FontAwesomeIcon icon={faShieldAlt} className="mr-1" />
               <span>Secure connection</span>
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   );

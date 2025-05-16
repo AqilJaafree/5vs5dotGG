@@ -1,0 +1,96 @@
+/* Custom styles for wallet adapter UI components */
+
+/* Override the default wallet adapter button styles */
+.wallet-adapter-button {
+  background-color: #FFA3FD !important;
+  color: #191825 !important;
+  font-family: "Russo One", sans-serif !important;
+  border-radius: 8px !important;
+  height: 42px !important;
+  transition: all 0.3s !important;
+}
+
+.wallet-adapter-button:hover {
+  background-color: #865DFF !important;
+  color: white !important;
+  box-shadow: 0 0 10px rgba(134, 93, 255, 0.5) !important;
+}
+
+.wallet-adapter-button:active {
+  opacity: 0.8 !important;
+}
+
+/* Wallet modal styles */
+.wallet-adapter-modal {
+  font-family: "Russo One", sans-serif !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  background-color: #191825 !important;
+  border: 2px solid #865DFF !important;
+  border-radius: 12px !important;
+}
+
+.wallet-adapter-modal-button-close {
+  background-color: #865DFF !important;
+}
+
+.wallet-adapter-modal-title {
+  color: white !important;
+}
+
+.wallet-adapter-modal-content {
+  color: white !important;
+}
+
+.wallet-adapter-modal-list {
+  margin: 20px 0 !important;
+}
+
+.wallet-adapter-modal-list-more {
+  color: #FFA3FD !important;
+}
+
+.wallet-adapter-modal-list-more:hover {
+  color: white !important;
+}
+
+/* Wallet items in modal */
+.wallet-adapter-modal-list li {
+  transition: all 0.2s !important;
+}
+
+.wallet-adapter-modal-list li:hover {
+  background-color: rgba(134, 93, 255, 0.2) !important;
+}
+
+/* Wallet dropdown styles */
+.wallet-adapter-dropdown {
+  width: 100%;
+}
+
+.wallet-adapter-dropdown-list {
+  background-color: #191825 !important;
+  border: 2px solid #865DFF !important;
+  border-radius: 8px !important;
+}
+
+.wallet-adapter-dropdown-list-item {
+  color: white !important;
+  font-family: "Russo One", sans-serif !important;
+  transition: all 0.2s !important;
+}
+
+.wallet-adapter-dropdown-list-item:hover {
+  background-color: #865DFF !important;
+}
+
+/* Make the wallet button fill the container width */
+.wallet-adapter-button-container .wallet-adapter-button {
+  width: 100% !important;
+}
+
+/* Wallet icon style */
+.wallet-adapter-button-start-icon {
+  margin-right: 8px !important;
+}
