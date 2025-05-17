@@ -14,7 +14,7 @@ import Loading from './components/Loading';
 import SplashScreen from './pages/SplashScreen';
 import WalletConnectPage from './pages/WalletConnect';
 import WalletContextProvider from './context/WalletContextProvider';
-
+import { BoltProvider } from './context/BoltContext';
 // Safe localStorage access
 const safeLocalStorage = {
   getItem: (key) => {
@@ -238,9 +238,11 @@ function AppContent() {
 function App() {
   return (
     <WalletContextProvider>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <BoltProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </BoltProvider>
     </WalletContextProvider>
   );
 }

@@ -1,7 +1,9 @@
+// src/components/NFTBox.jsx
 import React, { useState, useEffect } from 'react'
 import Button from './ui/Button'
 import { useWallet } from '@solana/wallet-adapter-react';
 import { claimNFT, checkNFTOwnership } from '../utils/nftUtils';
+import { useBolt } from '../context/BoltContext';
 
 // Role-based colors
 const roleColors = {
@@ -14,10 +16,14 @@ const roleColors = {
 
 const NFTBox = ({ image, name, price, mintAddress, role, position }) => {
   const { publicKey, connected } = useWallet();
+  const { connection, wallet, world, initializeWorld } = useBolt();
+  
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState(null);
   const [owned, setOwned] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [playerEntity, setPlayerEntity] = useState(null);
+  const [processingEntity, setProcessingEntity] = useState(false);
   
   // Get role-specific styling
   const borderColor = roleColors[role] || 'border-gray-500';
@@ -54,8 +60,38 @@ const NFTBox = ({ image, name, price, mintAddress, role, position }) => {
       setClaiming(true);
       setError(null);
       
-      await claimNFT(publicKey, mintAddress);
+      // Initialize world if not already initialized
+      let worldPda = world;
+      if (!worldPda) {
+        try {
+          setProcessingEntity(true);
+          worldPda = await initializeWorld();
+        } catch (worldError) {
+          console.log('Could not initialize world, but will continue with NFT claim');
+        } finally {
+          setProcessingEntity(false);
+        }
+      }
+      
+      // Claim NFT with integrated entity creation
+      const result = await claimNFT(
+        publicKey, 
+        mintAddress,
+        connection,
+        wallet,
+        worldPda
+      );
+      
       setOwned(true);
+      
+      // If entity was created, store the reference
+      if (result.entityPda) {
+        setPlayerEntity({
+          entityId: result.entityPda,
+          componentId: result.componentPda
+        });
+        console.log('Player entity created:', result.entityPda);
+      }
       
     } catch (err) {
       console.error('Error claiming NFT:', err);
@@ -93,6 +129,13 @@ const NFTBox = ({ image, name, price, mintAddress, role, position }) => {
             <div className="absolute top-1 right-1 text-xs text-white px-2 py-1 rounded-full bg-purple-500">
               {role}
             </div>
+            
+            {/* Entity badge - show if player entity exists */}
+            {playerEntity && (
+              <div className="absolute bottom-1 left-1 text-xs text-white px-2 py-1 rounded-full bg-green-500">
+                Entity
+              </div>
+            )}
           </div>
         </div>
         
@@ -107,6 +150,13 @@ const NFTBox = ({ image, name, price, mintAddress, role, position }) => {
             {mintAddress.slice(0, 4)}...{mintAddress.slice(-4)}
           </p>
           
+          {/* Display entity ID if available */}
+          {playerEntity && (
+            <p className="text-green-400 text-xs truncate mt-1">
+              Entity: {playerEntity.entityId.slice(0, 4)}...{playerEntity.entityId.slice(-4)}
+            </p>
+          )}
+          
           {/* Error message */}
           {error && (
             <p className="text-red-300 text-xs mt-1">{error}</p>
@@ -116,10 +166,15 @@ const NFTBox = ({ image, name, price, mintAddress, role, position }) => {
         {/* Claim button */}
         <div className="flex justify-center items-center">
           <Button 
-            text={claiming ? "Claiming..." : owned ? "Owned" : "Claim"} 
+            text={
+              claiming ? "Claiming..." : 
+              processingEntity ? "Processing..." :
+              owned ? (playerEntity ? "Owned & Ready" : "Owned") : 
+              "Claim"
+            } 
             variant={owned ? "outline" : "primary"}
             onClick={handleClaim}
-            disabled={claiming || owned || !connected}
+            disabled={claiming || processingEntity || owned || !connected}
           />
         </div>
       </div>
