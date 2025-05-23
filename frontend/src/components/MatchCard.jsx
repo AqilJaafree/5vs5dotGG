@@ -51,7 +51,7 @@ const MatchCard = ({ match, onJoinMatch }) => {
     if (onJoinMatch) {
       onJoinMatch(match.id);
     } else {
-      navigate(`/matches/${match.id}/join`);
+      navigate(`/match/${match.id}/join`);
     }
   };
   

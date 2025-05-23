@@ -38,7 +38,7 @@ const Match = () => {
         </div>
       </div>
 
-      {/* Join, Create and Find Match Button */}
+      {/* Create and Find Match Button */}
       <div className="flex justify-center items-center">
         <div className="absolute bottom-18">
           <div className="grid grid-cols-2 gap-6 pb-2">    

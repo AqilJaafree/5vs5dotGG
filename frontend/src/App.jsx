@@ -14,6 +14,7 @@ import Loading from './components/Loading';
 import SplashScreen from './pages/SplashScreen';
 import WalletConnectPage from './pages/WalletConnect';
 import WalletContextProvider from './context/WalletContextProvider';
+import Simulation from './pages/GameSimulation/Simulation';
 
 // Safe localStorage access
 const safeLocalStorage = {
@@ -202,6 +203,14 @@ function AppContent() {
                   element={
                     <ProtectedRoute> 
                       <CreateMatchModal /> 
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/match/:matchId/join" 
+                  element={
+                    <ProtectedRoute> 
+                      <Simulation /> 
                     </ProtectedRoute>
                   } 
                 />
