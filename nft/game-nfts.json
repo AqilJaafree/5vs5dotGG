@@ -1,154 +1,154 @@
 {
-  "collection": "CwhtTGag3k4zQXBuvQPPCZFsujSxFYTSSLH7W5Kxz3sL",
+  "collection": "CsDoQSXU7kifSh9Xkxc6gNQztLAXn5TWQvhwoDka1m9",
   "nfts": [
     {
-      "mint": "3NGTLCXNSeSE33iGsCFHk7N22c63uyvT2CUrHTk2inyQ",
+      "mint": "96BRaadAydRt51Hcg31jURzdVUqJD7hViTeTWYjvyVS4",
       "name": "5VS5 Player #1",
-      "position": "Bot Lane",
-      "class": "Support",
-      "attributes": {
-        "mechanical": 64,
-        "gameKnowledge": 61,
-        "teamCommunication": 67,
-        "adaptability": 86,
-        "consistency": 74,
-        "form": 86,
-        "potential": 83
-      }
-    },
-    {
-      "mint": "BxQ1MLKXzGA1idqMMdSiK5LztyFdv2ks4Go8rryBTP31",
-      "name": "5VS5 Player #2",
       "position": "Top Lane",
       "class": "Mage",
       "attributes": {
-        "mechanical": 91,
-        "gameKnowledge": 75,
-        "teamCommunication": 92,
-        "adaptability": 62,
-        "consistency": 94,
-        "form": 96,
-        "potential": 67
-      }
-    },
-    {
-      "mint": "2HKy29QTDCdCt4262ujEYBrcVa6f2xnsWSGAMcrEi2Hc",
-      "name": "5VS5 Player #3",
-      "position": "Bot Lane",
-      "class": "Assassin",
-      "attributes": {
-        "mechanical": 65,
-        "gameKnowledge": 70,
-        "teamCommunication": 87,
-        "adaptability": 80,
-        "consistency": 83,
-        "form": 81,
-        "potential": 68
-      }
-    },
-    {
-      "mint": "93bmRk3zFXhTrH8KkVMo3YkavdZi5eJnmknxA8TTSbh6",
-      "name": "5VS5 Player #4",
-      "position": "Jungler",
-      "class": "Assassin",
-      "attributes": {
-        "mechanical": 83,
-        "gameKnowledge": 76,
-        "teamCommunication": 71,
-        "adaptability": 67,
-        "consistency": 87,
-        "form": 62,
-        "potential": 84
-      }
-    },
-    {
-      "mint": "BZvcaVko3Umk6RMDFs6m16Gi2eMtPcrqoJtUbykK8H3s",
-      "name": "5VS5 Player #5",
-      "position": "Bot Lane",
-      "class": "Marksman",
-      "attributes": {
-        "mechanical": 72,
-        "gameKnowledge": 73,
-        "teamCommunication": 83,
-        "adaptability": 80,
-        "consistency": 91,
-        "form": 97,
-        "potential": 71
-      }
-    },
-    {
-      "mint": "C8YQnR6VXTiHdf3UoWdcBXP3RPDisRntV9ADPmztkC9J",
-      "name": "5VS5 Player #6",
-      "position": "Jungler",
-      "class": "Marksman",
-      "attributes": {
-        "mechanical": 83,
-        "gameKnowledge": 93,
-        "teamCommunication": 79,
-        "adaptability": 66,
-        "consistency": 71,
-        "form": 83,
+        "mechanical": 70,
+        "gameKnowledge": 60,
+        "teamCommunication": 81,
+        "adaptability": 90,
+        "consistency": 77,
+        "form": 72,
         "potential": 74
       }
     },
     {
-      "mint": "2Hfw6so4g1tcQBXL1VAgKMhwoYLaCcgeqqMCCYtfBeBn",
-      "name": "5VS5 Player #7",
+      "mint": "AiHxT88TB69DUciEaBvt3LNtGcAhEM4uqBGuiC5JRhuq",
+      "name": "5VS5 Player #2",
+      "position": "Bot Lane",
+      "class": "Marksman",
+      "attributes": {
+        "mechanical": 88,
+        "gameKnowledge": 80,
+        "teamCommunication": 79,
+        "adaptability": 70,
+        "consistency": 82,
+        "form": 76,
+        "potential": 79
+      }
+    },
+    {
+      "mint": "GXnVkCZspJCxZxoznSDDufJscEnhVkUMe4x9qZNM4diW",
+      "name": "5VS5 Player #3",
       "position": "Mid Lane",
-      "class": "Assassin",
+      "class": "Tank",
       "attributes": {
-        "mechanical": 61,
-        "gameKnowledge": 99,
-        "teamCommunication": 69,
-        "adaptability": 90,
-        "consistency": 83,
-        "form": 84,
-        "potential": 78
+        "mechanical": 93,
+        "gameKnowledge": 96,
+        "teamCommunication": 78,
+        "adaptability": 60,
+        "consistency": 81,
+        "form": 64,
+        "potential": 67
       }
     },
     {
-      "mint": "Akj8uM3DC126mNPgUCErApR3Q9QJXNm6iN2684vfZmDw",
-      "name": "5VS5 Player #8",
-      "position": "Top Lane",
-      "class": "Support",
-      "attributes": {
-        "mechanical": 91,
-        "gameKnowledge": 76,
-        "teamCommunication": 87,
-        "adaptability": 77,
-        "consistency": 87,
-        "form": 68,
-        "potential": 69
-      }
-    },
-    {
-      "mint": "42ThcxMwne9FNWVTyhQ3NLv6WhYJvst8tAWgAC9vUzTc",
-      "name": "5VS5 Player #9",
+      "mint": "GZkFQrnu5UEBnqxWrY8QZURsQj92iwAG2PwYMw7eAy2E",
+      "name": "5VS5 Player #4",
       "position": "Bot Lane",
       "class": "Tank",
       "attributes": {
-        "mechanical": 74,
-        "gameKnowledge": 83,
-        "teamCommunication": 78,
-        "adaptability": 71,
-        "consistency": 82,
-        "form": 76,
-        "potential": 80
+        "mechanical": 68,
+        "gameKnowledge": 76,
+        "teamCommunication": 84,
+        "adaptability": 63,
+        "consistency": 75,
+        "form": 74,
+        "potential": 66
       }
     },
     {
-      "mint": "7ccoMis1akoEG6TJPQbH8emXyaq6QJGBzDJx8gSxL3jz",
-      "name": "5VS5 Player #10",
-      "position": "Jungler",
-      "class": "Assassin",
+      "mint": "CTmb6GpBkw8G56raiaN8UxcQPvR1dSY4NnCB9xVDgLc1",
+      "name": "5VS5 Player #5",
+      "position": "Top Lane",
+      "class": "Marksman",
       "attributes": {
         "mechanical": 75,
-        "gameKnowledge": 74,
-        "teamCommunication": 66,
+        "gameKnowledge": 62,
+        "teamCommunication": 84,
+        "adaptability": 89,
+        "consistency": 86,
+        "form": 68,
+        "potential": 66
+      }
+    },
+    {
+      "mint": "CgtLgpkN43LQrYpbMLBvTFfu365bbCdiGA18sMh36Q2R",
+      "name": "5VS5 Player #6",
+      "position": "Jungler",
+      "class": "Tank",
+      "attributes": {
+        "mechanical": 75,
+        "gameKnowledge": 68,
+        "teamCommunication": 65,
+        "adaptability": 73,
+        "consistency": 79,
+        "form": 91,
+        "potential": 90
+      }
+    },
+    {
+      "mint": "7Tun7kgbrgDkEYGRuYJXKmNUx2p8sZi8cYp6vNEa4VGW",
+      "name": "5VS5 Player #7",
+      "position": "Support",
+      "class": "Support",
+      "attributes": {
+        "mechanical": 96,
+        "gameKnowledge": 70,
+        "teamCommunication": 77,
         "adaptability": 98,
-        "consistency": 70,
-        "form": 79,
-        "potential": 85
+        "consistency": 72,
+        "form": 66,
+        "potential": 95
+      }
+    },
+    {
+      "mint": "56vXzXyEpvPbRJQGxHaWVZGyAimzwuCMHDYv8qoVgU59",
+      "name": "5VS5 Player #8",
+      "position": "Support",
+      "class": "Support",
+      "attributes": {
+        "mechanical": 89,
+        "gameKnowledge": 92,
+        "teamCommunication": 91,
+        "adaptability": 82,
+        "consistency": 85,
+        "form": 62,
+        "potential": 87
+      }
+    },
+    {
+      "mint": "92Q9nJ5XSMKNCdMAvBDvHCLwtVSd1JFMR1dBNLYv5h2y",
+      "name": "5VS5 Player #9",
+      "position": "Top Lane",
+      "class": "Support",
+      "attributes": {
+        "mechanical": 93,
+        "gameKnowledge": 97,
+        "teamCommunication": 74,
+        "adaptability": 64,
+        "consistency": 87,
+        "form": 71,
+        "potential": 99
+      }
+    },
+    {
+      "mint": "82hg1nwp9t6919sBvmQJoz9HjCgi1L3xkYECpeapz7Jz",
+      "name": "5VS5 Player #10",
+      "position": "Top Lane",
+      "class": "Tank",
+      "attributes": {
+        "mechanical": 66,
+        "gameKnowledge": 98,
+        "teamCommunication": 80,
+        "adaptability": 64,
+        "consistency": 62,
+        "form": 62,
+        "potential": 89
       }
     }
   ]

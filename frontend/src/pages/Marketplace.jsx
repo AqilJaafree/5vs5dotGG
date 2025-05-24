@@ -1,3 +1,6 @@
+// frontend/src/pages/Marketplace.jsx
+// Updated with your actual NFT mint addresses
+
 import React, { useState, useEffect } from 'react'
 import NFTBox from '../components/NFTBox'
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -10,7 +13,7 @@ const Marketplace = () => {
   const [error, setError] = useState(null);
   
   // The image URL from Irys gateway
-  const baseImageUrl = "https://gateway.irys.xyz/9GWEH5KS7cpfJgMVpCsRP5NvD94ozZ2eBQUbuS5ETZ1a";
+  const baseImageUrl = "https://gateway.irys.xyz/6y26DhHoqoTgYvkhKXNpakDMpetJWwqZD8R78RtEZFK9";
   
   // Fetch NFTs data
   useEffect(() => {
@@ -18,97 +21,97 @@ const Marketplace = () => {
       try {
         setLoading(true);
         
-        // NFT data with real mint addresses
+        // NFT data with your actual mint addresses from the minting output
         const gameNFTs = [
           { 
             id: 1, 
-            name: 'Support - Bot Lane', 
-            image: baseImageUrl,
-            price: '0.05 SOL',
-            mintAddress: '3NGTLCXNSeSE33iGsCFHk7N22c63uyvT2CUrHTk2inyQ',
-            role: 'Support',
-            position: 'Bot Lane'
-          },
-          { 
-            id: 2, 
             name: 'Mage - Top Lane', 
             image: baseImageUrl,
             price: '0.05 SOL',
-            mintAddress: 'BxQ1MLKXzGA1idqMMdSiK5LztyFdv2ks4Go8rryBTP31',
+            mintAddress: '96BRaadAydRt51Hcg31jURzdVUqJD7hViTeTWYjvyVS4',
             role: 'Mage',
             position: 'Top Lane'
           },
           { 
-            id: 3, 
-            name: 'Assassin - Bot Lane', 
-            image: baseImageUrl,
-            price: '0.05 SOL',
-            mintAddress: '2HKy29QTDCdCt4262ujEYBrcVa6f2xnsWSGAMcrEi2Hc',
-            role: 'Assassin',
-            position: 'Bot Lane'
-          },
-          { 
-            id: 4, 
-            name: 'Assassin - Jungler', 
-            image: baseImageUrl,
-            price: '0.05 SOL',
-            mintAddress: '93bmRk3zFXhTrH8KkVMo3YkavdZi5eJnmknxA8TTSbh6',
-            role: 'Assassin',
-            position: 'Jungler'
-          },
-          { 
-            id: 5, 
+            id: 2, 
             name: 'Marksman - Bot Lane', 
             image: baseImageUrl,
             price: '0.05 SOL',
-            mintAddress: 'BZvcaVko3Umk6RMDFs6m16Gi2eMtPcrqoJtUbykK8H3s',
+            mintAddress: 'AiHxT88TB69DUciEaBvt3LNtGcAhEM4uqBGuiC5JRhuq',
             role: 'Marksman',
             position: 'Bot Lane'
           },
           { 
-            id: 6, 
-            name: 'Marksman - Jungler', 
+            id: 3, 
+            name: 'Tank - Mid Lane', 
             image: baseImageUrl,
             price: '0.05 SOL',
-            mintAddress: 'C8YQnR6VXTiHdf3UoWdcBXP3RPDisRntV9ADPmztkC9J',
-            role: 'Marksman',
-            position: 'Jungler'
-          },
-          { 
-            id: 7, 
-            name: 'Assassin - Mid Lane', 
-            image: baseImageUrl,
-            price: '0.05 SOL',
-            mintAddress: '2Hfw6so4g1tcQBXL1VAgKMhwoYLaCcgeqqMCCYtfBeBn',
-            role: 'Assassin',
+            mintAddress: 'GXnVkCZspJCxZxoznSDDufJscEnhVkUMe4x9qZNM4diW',
+            role: 'Tank',
             position: 'Mid Lane'
           },
           { 
-            id: 8, 
-            name: 'Support - Top Lane', 
-            image: baseImageUrl,
-            price: '0.05 SOL',
-            mintAddress: 'Akj8uM3DC126mNPgUCErApR3Q9QJXNm6iN2684vfZmDw',
-            role: 'Support',
-            position: 'Top Lane'
-          },
-          { 
-            id: 9, 
+            id: 4, 
             name: 'Tank - Bot Lane', 
             image: baseImageUrl,
             price: '0.05 SOL',
-            mintAddress: '42ThcxMwne9FNWVTyhQ3NLv6WhYJvst8tAWgAC9vUzTc',
+            mintAddress: 'GZkFQrnu5UEBnqxWrY8QZURsQj92iwAG2PwYMw7eAy2E',
             role: 'Tank',
             position: 'Bot Lane'
           },
           { 
-            id: 10, 
-            name: 'Assassin - Jungler', 
+            id: 5, 
+            name: 'Marksman - Top Lane', 
             image: baseImageUrl,
             price: '0.05 SOL',
-            mintAddress: '7ccoMis1akoEG6TJPQbH8emXyaq6QJGBzDJx8gSxL3jz',
-            role: 'Assassin',
+            mintAddress: 'CTmb6GpBkw8G56raiaN8UxcQPvR1dSY4NnCB9xVDgLc1',
+            role: 'Marksman',
+            position: 'Top Lane'
+          },
+          { 
+            id: 6, 
+            name: 'Tank - Jungler', 
+            image: baseImageUrl,
+            price: '0.05 SOL',
+            mintAddress: 'CgtLgpkN43LQrYpbMLBvTFfu365bbCdiGA18sMh36Q2R',
+            role: 'Tank',
             position: 'Jungler'
+          },
+          { 
+            id: 7, 
+            name: 'Support - Support', 
+            image: baseImageUrl,
+            price: '0.05 SOL',
+            mintAddress: '7Tun7kgbrgDkEYGRuYJXKmNUx2p8sZi8cYp6vNEa4VGW',
+            role: 'Support',
+            position: 'Support'
+          },
+          { 
+            id: 8, 
+            name: 'Support - Support', 
+            image: baseImageUrl,
+            price: '0.05 SOL',
+            mintAddress: '56vXzXyEpvPbRJQGxHaWVZGyAimzwuCMHDYv8qoVgU59',
+            role: 'Support',
+            position: 'Support'
+          },
+          { 
+            id: 9, 
+            name: 'Support - Top Lane', 
+            image: baseImageUrl,
+            price: '0.05 SOL',
+            mintAddress: '92Q9nJ5XSMKNCdMAvBDvHCLwtVSd1JFMR1dBNLYv5h2y',
+            role: 'Support',
+            position: 'Top Lane'
+          },
+          { 
+            id: 10, 
+            name: 'Tank - Top Lane', 
+            image: baseImageUrl,
+            price: '0.05 SOL',
+            mintAddress: '82hg1nwp9t6919sBvmQJoz9HjCgi1L3xkYECpeapz7Jz',
+            role: 'Tank',
+            position: 'Top Lane'
           },
         ];
         

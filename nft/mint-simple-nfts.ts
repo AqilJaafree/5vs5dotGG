@@ -16,7 +16,7 @@ import fs from 'fs';
 
 // Configuration
 const TOTAL_NFTS = 10; // Number of NFTs to create
-const WALLET_PATH = '/home/wanaqil/devnet-wallet.json';
+const WALLET_PATH = '/home/wanaqil/.config/solana/id.json';
 const POSITIONS = ['Top Lane', 'Mid Lane', 'Bot Lane', 'Jungler', 'Support'];
 const CLASSES = ['Tank', 'Assassin', 'Mage', 'Marksman', 'Support'];
 
