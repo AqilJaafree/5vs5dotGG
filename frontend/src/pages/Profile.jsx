@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import LoadingSpinner from '../components/LoadingSpinner';
 import Button from '../components/ui/Button';
 
 // Import wallet adapter styles
 import '@solana/wallet-adapter-react-ui/styles.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Profile = () => {
   const [loading, setLoading] = useState(true);
@@ -43,13 +43,16 @@ const Profile = () => {
             wins: 7,
             losses: 3,
           };
+
           
           setUserData(mockUserData);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
+        setTimeout(() => {
         setLoading(false);
+        }, 500);
       }
     };
 

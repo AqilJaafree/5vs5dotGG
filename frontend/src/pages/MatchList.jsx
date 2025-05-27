@@ -118,7 +118,7 @@ const MatchesList = () => {
           {/* Loading state */}
           {loading ? (
             <div className="flex justify-center items-center h-85">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#865DFF]"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
             </div>
           ) : error ? (
             <div className="bg-red-900 text-white p-4 rounded-lg">

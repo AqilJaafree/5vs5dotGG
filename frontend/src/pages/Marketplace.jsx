@@ -121,7 +121,9 @@ const Marketplace = () => {
       } catch (err) {
         console.error('Error fetching NFTs:', err);
         setError('Failed to load NFTs. Please try again later.');
+        setTimeout(() => {
         setLoading(false);
+        }, 500);
       }
     };
     
